@@ -1,7 +1,7 @@
 # Natural Language Processing - Deep Learning
 -----------------------------
 
-## INDIAN INSTITUE OF TECHNOLOGY
+## INDIAN INSTITUTE OF TECHNOLOGY
 
 ## Made By -
 ## Shashwat Kathuria - B17CS050
