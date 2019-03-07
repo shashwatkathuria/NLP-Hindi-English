@@ -4,12 +4,16 @@
 ### INDIAN INSTITUTE OF TECHNOLOGY, JODHPUR
 
 -----------------------------
+#### MADE BY
+-----------------------------
 
-#### Made By -
 ### Shashwat Kathuria - B17CS050
 ### Shreyas Mahajan   - B17CS051
 
-#### Under Supervision Of -
+-----------------------------
+#### UNDER SUPERVISION OF
+-----------------------------
+
 ### Prof. Gaurav Harit
 
 ------------------------------
