@@ -1,13 +1,15 @@
 # Natural Language Processing - Deep Learning
 -----------------------------
 
-## INDIAN INSTITUTE OF TECHNOLOGY
+### INDIAN INSTITUTE OF TECHNOLOGY, JODHPUR
 
-## Made By -
-## Shashwat Kathuria - B17CS050
-## Shreyas Mahajan   - B17CS051
+-----------------------------
 
-## Under Supervision Of -
-## Prof. Gaurav Harit
+#### Made By -
+### Shashwat Kathuria - B17CS050
+### Shreyas Mahajan   - B17CS051
+
+#### Under Supervision Of -
+### Prof. Gaurav Harit
 
 ------------------------------
