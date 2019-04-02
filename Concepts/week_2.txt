@@ -1,0 +1,217 @@
+--------------------------------------------------------
+SOURCES REFERRED TO IN WEEK 1
+--------------------------------------------------------
+
+1. Youtube Edureka Channel
+2. Wikipedia - https://en.wikipedia.org/wiki/Natural_language_processing
+3. http://language.worldofcomputing.net/pos-tagging/rule-based-pos-tagging.html
+4. https://link.springer.com/chapter/10.1007/3-540-34336-9_7
+
+--------------------------------------------------------
+SOURCES REFERRED TO IN THIS WEEK
+--------------------------------------------------------
+
+1. https://en.wikipedia.org/wiki/Hidden_Markov_model
+2. Reasearch Paper 'HindiPOSTagging.pdf' cited in ref.json
+
+--------------------------------------------------------
+PROGRAMMING TASKS DONE
+--------------------------------------------------------
+
+Made a Hindi Tokenizer and downloaded the NLTK Corpus.
+
+--------------------------------------------------------
+
+Continuing on our discussion of the previous week's B.Tech Report.
+
+The next level of complexity that can be introduced into a stochastic tagger
+combines the previous two approaches, using both tag sequence probabilities and
+word frequency measurements. This is known as the Hidden Markov Model (HMM).
+
+Before proceeding with what is a Hidden Markov Model, let us first
+look at what is a Markov Model. That will better help understand the
+meaning of the term Hidden in HMMs.
+
+--------------------------------------------------------
+MARKOV MODEL
+--------------------------------------------------------
+
+Say that there are only three kinds of weather conditions, namely
+
+     Rainy
+     Sunny
+     Cloudy
+
+Now, since our young friend we introduced before, Peter, is a small kid,
+he loves to play outside. He loves it when the weather is sunny, because
+all his friends come out to play in the sunny conditions.
+
+He hates the rainy weather for obvious reasons.
+
+Every day, his mother observes the weather in the morning (that is
+when he usually goes out to play) and like always, Peter comes up to
+her right after getting up and asks her to tell him what the weather is
+going to be like. Since she is a responsible parent, she wants to answer
+that question as accurately as possible. But the only thing she has is a
+set of observations taken over multiple days as to how weather has
+been.
+
+How does she make a prediction of the weather for today based on
+what the weather has been for the past N days?
+
+Say you have a sequence. Something like this:
+
+Sunny, Rainy, Cloudy, Cloudy, Sunny, Sunny, Sunny, Rainy
+
+So, the weather for any given day can be in any of the three states.
+
+Let’s say we decide to use a Markov Chain Model to solve this problem.
+Now using the data that we have, we can construct a state
+diagram with labelled probabilities with states as Rainy, Sunny and Cloudy.
+
+In order to compute the probability of today’s weather given N previous
+observations, we will use the Markovian Property, which says that,
+
+  P(q1,q2,....,qn) = Multiplication(from i to n) of P(q(i) | q(i-1) )
+
+Markov Chain is essentially the simplest known Markov model, that is, it
+obeys the Markov property.
+
+The Markov property suggests that the distribution for a random
+variable in the future depends solely only on its distribution in the
+current state, and none of the previous states have any impact on the
+future states.
+
+As per the Markov property, the probability of tomorrow's weather being
+Sunny depends solely on today's weather and not on yesterday's, which can
+be verified by the equation given above.
+
+Let us now proceed and see what is hidden in the Hidden Markov
+Models.
+
+--------------------------------------------------------
+HIDDEN MARKOV MODEL
+--------------------------------------------------------
+
+It’s the small kid Peter again, and this time he’s gonna pester his new
+caretaker — which is you.
+
+As a caretaker, one of the most important tasks for you is to tuck Peter
+into bed and make sure he is sound asleep. Once you’ve tucked him in,
+you want to make sure he’s actually asleep and not up to some mischief.
+
+You cannot, however, enter the room again, as that would surely wake
+Peter up. So all you have to decide are the noises that might come from
+the room. Either the room is quiet or there is noise coming from the
+room. These are your states.
+
+Peter’s mother, before leaving you to this nightmare, said:
+
+          May the sound be with you :)
+
+Suppose his mother has given you a state diagram. The diagram has
+some states, observations, and probabilities.
+
+Note that there is no direct correlation between sound from the room
+and Peter being asleep.
+
+There are two kinds of probabilities that we can see from such a state
+diagram.
+
+
+      - One is the emission probabilities, which represent the
+        probabilities of making certain observations given a particular
+        state. For example, we have P(noise | awake) = 0.5. This is an
+        emission probability.
+
+      - The other ones is transition probabilities, which represent the
+        probability of transitioning to another state given a particular
+        state. For example, we have P(asleep | awake) = 0.4 . This is a
+        transition probability.
+
+The Markovian property applies in this model as well. So do not
+complicate things too much. Markov, your savior said:
+
+        Don’t go too much into the history...
+
+The Markov property, as would be applicable to the example we have
+considered here, would be that the probability of Peter being in a state
+depends ONLY on the previous state.
+
+But there is a clear flaw in the Markov property. If Peter has been awake
+for an hour, then the probability of him falling asleep is higher than if
+has been awake for just 5 minutes. So, history matters. Therefore, the
+Markov state machine-based model is not completely correct. It’s merely a
+simplification.
+
+The Markov property, although wrong, makes this problem very
+tractable.
+
+We usually observe longer stretches of the child being awake and being
+asleep. If Peter is awake now, the probability of him staying awake is
+higher than of him going to sleep. Hence the probabilities P(asleep | asleep)
+and P(awake | awake) will be higher than the other transitions probabilities.
+Before actually trying to solve the problem at hand using HMMs, let’s
+relate this model to the task of Part of Speech Tagging.
+
+--------------------------------------------------------
+HMMs FOR PART OF SPEECH TAGGING
+--------------------------------------------------------
+
+We know that to model any problem using a Hidden Markov Model we
+need a set of observations and a set of possible states. The states in
+an HMM are hidden.
+
+In the Part of Speech Tagging problem, the observations are the words
+themselves in the given sequence.
+
+As for the states, which are hidden, these would be the POS tags for
+the words.
+
+The transition probabilities would be somewhat like P(VP | NP), that
+is, what is the probability of the current word having a tag of Verb
+Phrase given that the previous tag was a Noun Phrase.
+
+Emission probabilities would be P(john | NP) or P(will | VP), that
+is, what is the probability that the word is, say, John, given that
+the tag is a Noun Phrase.
+
+Note that this is just an informal modeling of the problem to provide a
+very basic understanding of how the Part of Speech tagging problem
+can be modeled using an HMM.
+
+--------------------------------------------------------
+HOW DO WE SOLVE THIS?
+--------------------------------------------------------
+
+Coming back to our problem of taking care of Peter.
+
+Our problem here was that we have an initial state: Peter was awake
+when you tucked him into bed. After that, you recorded a sequence of
+observations, namely noise or quiet, at different time-steps. Using
+these set of observations and the initial state, you want to find out
+whether Peter would be awake or asleep after say N time steps.
+
+We draw all possible transitions starting from the initial state. There’s
+an exponential number of branches that come out as we keep moving
+forward (assuming diagram and states is drawn left to right). So the model
+grows exponentially after a few time steps. Even without considering any
+observations.
+
+If we had a set of states, we could calculate the probability of the
+sequence. But we don’t have the states. All we have are a sequence of
+observations. This is why this model is referred to as the Hidden
+Markov Model — because the actual states over time are hidden.
+
+So, caretaker, if you’ve come this far it means that you have at least a
+fairly good understanding of how the problem is to be structured. All
+that is left now is to use some algorithm / technique to actually solve
+the problem.
+
+--------------------------------------------------------
+
+In the next week, we will see how we can use a
+well defined algorithm known as the Viterbi Algorithm to decode the
+given sequence of observations given the model.
+
+--------------------------------------------------------

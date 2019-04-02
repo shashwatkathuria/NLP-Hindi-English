@@ -1,0 +1,304 @@
+-------------------------------------------------------------------------
+INTRODUCTION TO NATURAL LANGUAGE PROCESSING
+-------------------------------------------------------------------------
+
+Natural language processing (NLP) is a subfield of computer science, information
+engineering, and artificial intelligence concerned with the interactions between
+computers and human (natural) languages, in particular how to program computers
+to process and analyze large amounts of natural language data.
+
+-------------------------------------------------------------------------
+CHALLENGES INVOLVED IN NLP
+-------------------------------------------------------------------------
+
+Challenges in natural language processing frequently involve speech recognition,
+natural language understanding, and natural language generation.
+
+-------------------------------------------------------------------------
+MAIN CATEGORIES OF NLP
+-------------------------------------------------------------------------
+
+1. Grammar Induction
+
+	 Generate a formal grammar that describes a language's syntax.
+
+
+2. Tokenization
+
+	Separate text into words or sentences or paragraphs.
+
+
+3. Stemming
+
+	Process of reducing inflected (or sometimes derived) words to their word stem,
+	base or root form—generally a written word form.
+
+
+4. Lemmatization
+
+	The task of removing inflectional endings only and to return the base dictionary
+	form of a word which is also known as a lemma.
+
+
+5. Part Of Speech Tagging
+
+	Given a sentence, determine the part of speech for each word. Mapping words to
+	nouns, verbs, adjectives,etc.
+
+
+6. Named Entity Recognition
+
+	Given a stream of text, determine which items in the text map to proper names,
+	such as people or places, and what the type of each such name is (e.g. person,
+	location, organization).
+
+
+7. Chunking
+
+	Also referred to as shallow parsing, is a task that adds more structure to the
+	sentence. The result is a grouping of the words in “chunks”.
+
+
+-------------------------------------------------------------------------
+OUR TASK
+-------------------------------------------------------------------------
+
+The task of our B.Tech project is to understand the working of the POS(Part Of
+Speech Tagger), analyze it in English language, then create a model so as to
+extend it to regional languages like Hindi, which still remains an open problem.
+
+-----------------------------
+-----------------------------
+
+Let’s go back into the times when we had no language to communicate.The only way
+we had was sign language. That’s how we usually communicate with our dog at home,
+right? When we tell him, “We love you, Jimmy,” he responds by wagging his tail.
+This doesn’t mean he knows what we are actually saying. Instead, his response is
+simply because he understands the language of emotions and gestures more than words.
+
+We as humans have developed an understanding of a lot of nuances of the natural
+language more than any animal on this planet. That is why when we say “I LOVE you,
+honey” vs when we say “Lets make LOVE, honey” we mean different things. Since we
+understand the basic difference between the two phrases, our responses are very
+different. It is these very intricacies in natural language understanding that
+we want to teach to a machine.
+
+What this could mean is when your future robot dog hears “I love you, Jimmy”, he
+would know LOVE is a Verb. He would also realize that it’s an emotion that we are
+expressing to which he would respond in a certain way. And maybe when you are
+telling your partner “Lets make LOVE”, the dog would just stay out of your business.
+
+This is just an example of how teaching a robot to communicate in a language known
+to us can make things easier.
+
+The primary use case being highlighted in this example is how important it is to
+understand the difference in the usage of the word LOVE, in different contexts.
+
+-----------------------------
+-----------------------------
+PART OF SPEECH TAGGING
+-----------------------------
+-----------------------------
+
+From a very small age, we have been made accustomed to identifying part of speech
+tags. For example, reading a sentence and being able to identify what words act
+as nouns, pronouns, verbs, adverbs, and so on. All these are referred to as the
+part of speech tags.
+
+
+Let’s look at the Wikipedia definition for them:
+
+In corpus linguistics, part-of-speech tagging (POS tagging or PoS tagging or POST),
+also called grammatical tagging or word-category disambiguation, is the process
+of marking up a word in a text (corpus) as corresponding to a particular part of
+speech, based on both its denfiition and its context, i.e., its relationship with
+adjacent and related words in a phrase, sentence, or paragraph. A simplied form
+of this is commonly taught to schoolage children, in the identication of words
+as nouns, verbs, adjectives, adverbs, etc.
+
+
+Identifying part of speech tags is much more complicated than simply mapping words
+to their part of speech tags. This is because POS tagging is not something that
+is generic. It is quite possible for a single word to have a different part of
+speech tag in different sentences based on different contexts. That is why it is
+impossible to have a generic mapping for POS tags.
+
+As you can see, it is not possible to manually find out different part-of-speech
+tags for a given corpus. New types of contexts and new words keep coming up in
+dictionaries in various languages, and manual POS tagging is not scalable in itself.
+That is why we rely on machine-based POS tagging.
+
+Before proceeding further and looking at how part-of-speech tagging is done, we
+should look at why POS tagging is necessary and where it can be used.
+
+------------------------------
+------------------------------
+WHY PART OF SPEECH TAGGING?
+------------------------------
+------------------------------
+
+Part-of-Speech tagging is something that is done as a prerequisite to simplify a
+lot of different problems. Let us consider a few applications of POS tagging in
+various NLP tasks.
+
+------------------------------
+--TEXT TO SPEECH CONVERSION
+------------------------------
+
+
+Let us look at the following sentence:
+
+	~ They refuse to permit us to obtain the refuse permit.
+
+
+The word refuse is being used twice in this sentence and has two different meanings
+here. RefUSE is a verb meaning “deny”, while REFuse is a noun meaning “trash”
+(that is, they are not homophones). Thus, we need to know which word is being
+used in order to pronounce the text correctly. (For this reason, text-to-speech
+systems usually perform POS-tagging.)
+
+
+Have a look at the part-of-speech tags generated for this very sentence by the
+NLTK package in Python(Version 3.6) which we will be using in the weeks to come:
+
+>>> text = word_tokenize("They refuse to permit us to obtain the refuse permit")
+>>> nltk.pos_tag(text)
+[('They', 'PRP'), ('refuse', 'VBP'), ('to', 'TO'), ('permit', 'VB'),
+('us', 'PRP'), ('to', 'TO'), ('obtain', 'VB'), ('the', 'DT'), ('refuse', 'NN'),
+('permit', 'NN')]
+
+
+As we can see from the results provided by the NLTK package, POS tags for both
+refUSE and REFuse are different. Using these two different POS tags for our text
+ to speech converter can come up with a different set of sounds.
+
+Similarly, let us look at yet another classical application of POS tagging, Word
+Sense Disambiguation.
+
+
+------------------------------
+-- WORD SENSE DISAMBIGUATION
+------------------------------
+
+
+Words often occur in different senses as different parts of speech. For example:
+
+	~ She saw a bear.
+
+	~ Your efforts will bear fruit.
+
+The word bear in the above sentences has completely different senses, but more
+importantly one is a noun and other is a verb. Rudimentary word sense disambiguation
+is possible if you can tag words with their POS tags.
+
+Word-sense disambiguation is identifying which sense of a word (that is, which
+meaning) is used in a sentence, when the word has multiple meanings.
+
+Try to think of the multiple meanings for this sentence:
+
+	~ Time flies like an arrow.
+
+Three different meanings :-
+
+	~ (Time like an arrow) flies.
+	~ (Time flies - the fly mosquito) like an arrow.
+	~ (Time) (flies like an arrow).
+
+There are three multiple interpretations possible for the given sentence. Different
+interpretations yield different kinds of part of speech tags for the words. This
+information, if available to us, can help us find out the exact version or
+interpretation of the sentence and then we can proceed from there.
+
+The above example shows us that a single sentence can have three different POS
+tag sequences assigned to it that are equally likely. That means that it is very
+important to know what specific meaning is being conveyed by the given sentence
+whenever it’s appearing. This is word sense disambiguation, as we are trying
+to find out THE sequence.
+
+------------------------------
+
+These are just two of the numerous applications where we would require POS tagging.
+There are other applications as well which require POS tagging, like Question
+Answering, Speech Recognition, Machine Translation, and so on.
+
+Now that we have a basic knowledge of different applications of POS tagging, let
+us look at how we can go about actually assigning POS tags to all the words in
+our corpus.
+
+--------------------------------
+--------------------------------
+TYPES OF POS TAGGERS
+--------------------------------
+--------------------------------
+
+
+POS-tagging algorithms fall into two distinctive groups:
+
+1. Rule-Based POS Taggers
+2. Stochastic POS Taggers
+
+
+E. Brill’s tagger, one of the first and most widely used English POS taggers,
+employs rule-based algorithms. Let us first look at a very brief overview of what
+rule-based tagging is all about.
+
+
+------------------------
+--RULE-BASED POS TAGGING
+------------------------
+
+Automatic part of speech tagging is an area of natural language processing where
+statistical techniques have been more successful than rule-based methods.
+
+Typical rule-based approaches use contextual information to assign tags to unknown
+or ambiguous words. Disambiguation is done by analyzing the linguistic features
+of the word, its preceding word, its following word, and other aspects.
+
+For example, if the preceding word is an article, then the word in question must
+be a noun. This information is coded in the form of rules.
+
+Example of a rule:
+
+	~ If an ambiguous/unknown word X is preceded by a determiner and followed by a
+	  noun, tag it as an adjective.
+
+Defining a set of rules manually is an extremely cumbersome process and is not
+scalable at all. So we need some automatic way of doing this.
+
+The Brill’s tagger is a rule-based tagger that goes through the training data
+and finds out the set of tagging rules that best define the data and minimize POS
+tagging errors. The most important point to note here about Brill’s tagger is
+that the rules are not hand-crafted, but are instead found out using the corpus
+provided. The only feature engineering required is a set of rule templates that
+the model can use to come up with new features.
+
+Let’s move ahead now and look at Stochastic POS tagging.
+
+-------------------------
+--STOCHASTIC POS TAGGING
+-------------------------
+
+The term ‘stochastic tagger’ can refer to any number of different approaches to
+the problem of POS tagging. Any model which somehow incorporates frequency or
+probability may be properly labelled stochastic.
+
+The simplest stochastic taggers disambiguate words based solely on the probability
+that a word occurs with a particular tag. In other words, the tag encountered most
+frequently in the training set with the word is the one assigned to an ambiguous
+instance of that word. The problem with this approach is that while it may yield
+ a valid tag for a given word, it can also yield inadmissible sequences of tags.
+
+An alternative to the word frequency approach is to calculate the probability of
+a given sequence of tags occurring. This is sometimes referred to as the n-gram
+approach, referring to the fact that the best tag for a given word is determined
+by the probability that it occurs with the n previous tags. This approach makes
+much more sense than the one defined before, because it considers the tags for
+individual words based on context.
+
+----------------------------------------------------------------------------
+
+The next level of complexity that can be introduced into a stochastic tagger
+combines the previous two approaches, using both tag sequence probabilities and
+word frequency measurements. This technique will be discussed in the next BTP report.
+
+----------------------------------------------------------------------------
