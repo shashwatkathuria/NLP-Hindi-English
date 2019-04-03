@@ -1,0 +1,222 @@
+-------------------------------------
+SOURCES REFERRED TO IN THIS WEEK
+-------------------------------------
+
+1. https://en.wikipedia.org/wiki/Hidden_Markov_model
+2. http://www.cs.columbia.edu/~mcollins/courses/nlp2011/notes/hmms.pdf
+3. Papers referred to in json and attached thereof in the directory.
+
+-------------------------------------
+PROGRAMMING TASKS DONE
+-------------------------------------
+
+1. Downloaded Scikit-learn library to train the pos tagger mentioned in 3.
+2. Analyzed the NLTK Corpus.
+3. Started making a program to train a POS Tagger using the above corpus.
+
+-------------------------------------
+
+Last week, we discussed about the Markov Model, Hidden Markov Model
+and a broad level idea on how to use it in the Part of Speech tagging
+context.
+
+Given the state diagram and a sequence of N observations over time,
+we need to tell the state of the baby at the current point in time.
+Mathematically, we have N observations over times t0,t1,...,tn. We
+want to find out if Peter would be awake or asleep, or rather which
+state is more probable at time t(n+1).
+
+So, before moving on to the Viterbi Algorithm, let’s first look at a
+much more detailed explanation of how the tagging problem can be
+modeled using HMMs.
+
+-------------------------------------
+GENERATIVE MODELS AND THE NOISY CHANNEL
+-------------------------------------
+A lot of problems in Natural Language Processing are solved using a
+supervised learning approach.
+Supervised problems in machine learning are defined as follows. We
+assume training examples (x(1), y(1)). . .(x(m) , y(m)), where each
+example consists of an input x(i) paired with a label y(i). We use
+X to refer to the set of possible inputs, and Y to refer to the set
+of possible labels. Our task is to learn a function f : X → Y that
+maps any input x to a label f(x).
+
+In tagging problems, each x(i) would be a sequence of words : X1 X2
+X3 ... Xn(i), and each y(i) would be a sequence of tags : Y1 Y2 Y3
+... Yn(i) (where n(i) refers to the length of the i’th training
+example). X would refer to the set of all sequences x1 . . . xn, and
+Y would be the set of all tag sequences y1 . . .yn. Our task would
+be to learn a function f : X → Y that maps sentences to tag sequences.
+
+An intuitive approach to get an estimate for this problem is to use
+conditional probabilities. P(y | x) which is the probability of the
+output y given an input x. The parameters of the model would be
+estimated using the training samples. Finally, given an unknown input
+x we would like to find f(x) = arg max(P(y | x)) for all y in Y.
+
+This here is the conditional model to solve this generic problem given
+the training data. Another approach that is mostly adopted in machine
+learning and natural language processing is to use a generative model.
+
+Rather than directly estimating the conditional distribution p(y|x),
+in generative models we instead model the joint probability p(x, y)
+over all the (x, y) pairs.That is, we further decompose the joint
+probability into simpler values using Bayes’ rule: P(x,y) = P(y)P(x|y).
+Here, P(y) is the prior probability of any input belonging to the label y
+and P(x | y) is the conditional probability of input x given the label y.
+We can use this decomposition and the Bayes rule to determine the
+conditional probability : P(y|x) = ( P(y)P(x | y) ) / P(x). Now, the
+function we wanted to estimate transforms to:f(x) = arg max(P(y) * P(x | y)).
+The reason we skipped the denominator here is because the probability P(x)
+remains the same no matter what the output label being considered. And so,
+from a computational perspective, it is treated as a normalization constant
+and is normally ignored.
+
+Models that decompose a joint probability into terms p(y) and p(x|y) are
+often called noisy-channel models. Intuitively, when we see a test example x,
+we assume that it has been generated in two steps:
+
+1. First, a label y has been chosen with probability p(y)
+2. Second, the example x has been generated from the distribution P(x|y).
+   The model P(x|y) can be interpreted as a “channel” which takes a label y
+   as its input, and corrupts it to produce x as its output.
+
+------------------------------------------
+GENERATIVE PART OF SPEECH TAGGING MODEL
+------------------------------------------
+A generative tagging model is then the one where
+
+1. P(<x1, x2, x3 ... xn, y1, y2, y3, ..., yn>) >= 0 and
+2. The summation over all such sequences is equal = 1.
+
+where x1..xn is the word sequence and y1...yn is the tag sequence (assuming
+the word and tag space is finite and the given sequences are subsets of the
+same).
+
+Given a generative tagging model, the function that we talked about earlier
+from input to output becomes
+
+f(x1...xn) = arg max P(x1...xn, y1...yn) (over all possible y1...yn)
+
+-------------------------------------------
+DEFINING THE GENERATIVE MODEL
+-------------------------------------------
+
+Let us look at how we can estimate the probability P(x1...xn, y1...yn)
+using the HMM.
+
+We can have any N-gram HMM which considers events in the previous window
+of size N.
+
+The formulas provided hereafter are corresponding to a Trigram Hidden
+Markov Model.
+
+--------------------------------------------
+TRIGRAM HIDDEN MARKOV MODEL
+--------------------------------------------
+
+A trigram Hidden Markov Model can be defined using
+
+1. A finite set of states.
+2. A sequence of observations.
+3. q(s|u, v)
+   Transition probability defined as the probability of a state “s”
+   appearing right after observing “u” and “v” in the sequence of
+   observations.
+4. e(x|s)
+   Emission probability defined as the probability of making an
+   observation x given that the state was s.
+
+Then, the generative model probability would be estimated as
+
+P(x1...xn,y1...y(n+1)) = multiplication(from i=1 to n+1)q(yi|y(i-2),y(i-1))
+                         *multiplication(from i=1 to n)e(xi|yi)
+
+Coming back to the sleeping child problem, we will have only two possible
+states, that the baby is either awake or he is asleep. The caretaker can make
+only two observations over time. Either there is noise coming in from the
+room or the room is absolutely quiet. The sequence of observations and states
+can be represented by one state assigned to a unit of time observation.
+
+Coming on to the part of speech tagging problem, the states would be
+represented by the actual tags assigned to the words. The words would be
+our observations. The reason we say that the tags are our states is because
+in a Hidden Markov Model, the states are always hidden and all we have are
+the set of observations that are visible to us. Along similar lines, the
+sequence of states and observations for the part of speech tagging problem
+would be tags assigned to words (where words take the place alongwith time
+as in the above correlation and being the observations).
+
+--------------------------------------
+ESTIMATING THE MODEL'S PARAMETERS
+--------------------------------------
+
+We already have access to training data in the NLTK corpus. The training data
+is to be a set of examples where each example is a sequence consisting of the
+observations, every observation being associated with a state. Given this data,
+we will now figure out a way to estimate the parameters of the model.
+
+Estimating the model's parameters is done by reading various counts off of the
+training corpus we have, and then computing maximum likelihood estimates.
+
+    q(s|u,v) = c(u,v,s)/c(u,v)
+
+    e(x|s) = c(s ~> x)/c(s)
+
+We already know that the first term represents transition probability and the
+second term represents the emission probability. Let us look at what the four
+different counts mean in the terms above.
+
+1. c(u, v, s) represents the trigram count of states u, v and s. Meaning it
+   represents the number of times the three states u, v and s occurred
+   together in that order in the training corpus.
+
+2. c(u, v) following along similar lines as that of the trigram count, this
+   is the bigram count of states u and v given the training corpus.
+
+3. c(s → x) is the number of times in the training set that the state s and
+   observation x are paired with each other.
+
+4. c(s) is the prior probability of an observation being labelled as the
+   state s.
+
+Note that since the example problem only has two distinct states and two
+distinct observations, and given that the training set is very small, the
+the example problem will have a bigram HMM instead of a trigram HMM.
+
+The training set that we have is a tagged corpus of sentences. Every sentence
+consists of words tagged with their corresponding part of speech tags.
+eg:- eat/VB means that the word is “eat” and the part of speech tag in this
+sentence in this very context is “VB” i.e. Verb Phrase.
+
+--------------------------------------
+TRANSITION PROBABILITY
+--------------------------------------
+
+Let’s say we want to calculate the transition probability q(IN | VB, NN).
+For this, we see how many times we see a trigram (VB,NN,IN) in the training
+corpus in that specific order. We then divide it by the total number of times
+we see the bigram (VB,NN) in the corpus.
+
+--------------------------------------
+EMISSION PROBABILITY
+--------------------------------------
+
+Let’s say we want to find out the emission probability e(an | DT). For this,
+we see how many times the word “an” is tagged as “DT” in the corpus and divide
+it by the total number of times we see the tag “DT” in the corpus.
+
+So if you look at these calculations, it shows that calculating the model’s
+parameters is not computationally expensive. That is, we don’t have to do
+multiple passes over the training data to calculate these parameters. All we
+need are a bunch of different counts, and a single pass over the training
+corpus should provide us with that.
+
+Now, for the final step of the generative model calculation will be done
+effiently by using the Viterbi Algorithm, which will be discussed in the
+next week's B.Tech Project Report.
+
+f(x1...xn) = arg max P(x1...xn, y1...yn) (over all possible y1...yn)
+
+--------------------------------------
