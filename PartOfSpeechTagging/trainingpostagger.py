@@ -5,76 +5,103 @@ from sklearn.pipeline import Pipeline
 
 # TRAINING POS TAGGER IN ENGLISH USING THE ABOVE LIBRARIES
 
-clf = Pipeline([
+# Initializing the classifier to be used
+classifier = Pipeline([
     ('vectorizer', DictVectorizer(sparse=False)),
     ('classifier', DecisionTreeClassifier(criterion='entropy'))
 ])
 
 def main():
-    tagged_sentences = nltk.corpus.treebank.tagged_sents()
-    print(tagged_sentences[0])
-    print("Tagged sentences: ", len(tagged_sentences))
-    print("Tagged words:", len(nltk.corpus.treebank.tagged_words()))
-    pprint.pprint(features(['This', 'is', 'a', 'sentence'], 2))
-    cutoff = int(.75 * len(tagged_sentences))
-    training_sentences = tagged_sentences[:cutoff]
-    test_sentences = tagged_sentences[cutoff:]
 
-    print(len(training_sentences))
-    print(len(test_sentences))
+    # Getting the nltk corpus treebank consisting of tagged sentences
+    taggedSentences = nltk.corpus.treebank.tagged_sents()
 
-    X, y = transform_to_dataset(training_sentences)
+    # Printing the number of tagged sentences and words in the same
+    print("Number of tagged sentences in dataset : " + str(len(taggedSentences)))
+    print("Number of tagged words in dataset     : " + str(len(nltk.corpus.treebank.tagged_words())))
 
+    # # Printing an example illustrating the features used in the model
+    # pprint.pprint(features(['This', 'is', 'a', 'sentence'], 2))
 
+    # Training 75% of tagged sentences as it is an ideal partition
+    cutoff = int(.75 * len(taggedSentences))
 
-    clf.fit(X[:10000], y[:10000])
+    # Splitting the same to learn from 75% and then test on 25% of data
+    trainingSentences = taggedSentences[:cutoff]
+    testSentences = taggedSentences[cutoff:]
 
-    print('Training completed')
+    # Printing the number of tagged sentences and test sentences
+    print("The number of training sentences are : " + str(len(trainingSentences)))
+    print("The number of test sentences are     : " + str(len(testSentences)))
 
-    X_test, y_test = transform_to_dataset(test_sentences)
+    # Tranforming to dataset to use inbuilt classifier function to train the model
+    X, y = transformToDataset(trainingSentences)
 
-    print("Accuracy : ", clf.score(X_test, y_test))
+    print("\nPlease wait...Training the model.\n")
 
-    print(pos_tag(nltk.word_tokenize('This is my friend, John.')))
+    # Training(Fitting) the model
+    classifier.fit(X[:10000], y[:10000])
+
+    print("Training completed.")
+
+    # Tranforming to dataset to use inbuilt classifier function to train the model
+    XTest, yTest = transformToDataset(testSentences)
+
+    # Computing and printing the accuracy of the model
+    print("\nThe accuracy of the trained model is : " + str(classifier.score(XTest, yTest)))
+
+    # Printing the sentence to be POS tagged
+    sentence = "My name is Shashwat Kathuria."
+    print("\nTagging the sentence : " + sentence + "\n")
+
+    # Tagging the sentence using the trained model
+    print(posTag(nltk.word_tokenize(sentence)))
 
 def features(sentence, index):
-    """ sentence: [w1, w2, ...], index: the index of the word """
+    """Function to return the features to be used in the model. Index is the index of the specific word in the sentence."""
+
+    # Returning the necessary features applied to the word, i.e., sentence[index]
     return {
         'word': sentence[index],
-        'is_first': index == 0,
-        'is_last': index == len(sentence) - 1,
-        'is_capitalized': sentence[index][0].upper() == sentence[index][0],
-        'is_all_caps': sentence[index].upper() == sentence[index],
-        'is_all_lower': sentence[index].lower() == sentence[index],
-        'prefix-1': sentence[index][0],
-        'prefix-2': sentence[index][:2],
-        'prefix-3': sentence[index][:3],
-        'suffix-1': sentence[index][-1],
-        'suffix-2': sentence[index][-2:],
-        'suffix-3': sentence[index][-3:],
-        'prev_word': '' if index == 0 else sentence[index - 1],
-        'next_word': '' if index == len(sentence) - 1 else sentence[index + 1],
-        'has_hyphen': '-' in sentence[index],
-        'is_numeric': sentence[index].isdigit(),
-        'capitals_inside': sentence[index][1:].lower() != sentence[index][1:]
+        'isFirst': index == 0,
+        'isLast': index == len(sentence) - 1,
+        'isCapitalized': sentence[index][0].upper() == sentence[index][0],
+        'isAllCaps': sentence[index].upper() == sentence[index],
+        'isAllLower': sentence[index].lower() == sentence[index],
+        'prefix1': sentence[index][0],
+        'prefix2': sentence[index][:2],
+        'prefix3': sentence[index][:3],
+        'suffix1': sentence[index][-1],
+        'suffix2': sentence[index][-2:],
+        'suffix3': sentence[index][-3:],
+        'previousWord': '' if index == 0 else sentence[index - 1],
+        'nextWord': '' if index == len(sentence) - 1 else sentence[index + 1],
+        'hasHyphen': '-' in sentence[index],
+        'isNumeric': sentence[index].isdigit(),
+        'capitalsInside': sentence[index][1:].lower() != sentence[index][1:]
     }
 
-def untag(tagged_sentence):
-    return [w for w, t in tagged_sentence]
+def untag(taggedSentence):
+    """Function to strip the tags from the sentences in our trained corpus and return the list of only words."""
+    return [word for word, tag in taggedSentence]
 
 
-def transform_to_dataset(tagged_sentences):
+def transformToDataset(taggedSentences):
+    """Function to tranform the tagged sentences into dataset suitable to pass into inbuilt classifier function."""
+    # X is the list of word specific the features and y is the corresponding tags
     X, y = [], []
 
-    for tagged in tagged_sentences:
-        for index in range(len(tagged)):
-            X.append(features(untag(tagged), index))
-            y.append(tagged[index][1])
+    # Appending the corresponding values of features and tags to X and y respectively
+    for taggedSentence in taggedSentences:
+        untaggedSentence = untag(taggedSentence)
+        for index in range(len(taggedSentence)):
+            X.append(features(untaggedSentence, index))
+            y.append(taggedSentence[index][1])
 
     return X, y
 
-def pos_tag(sentence):
-    tags = clf.predict([features(sentence, index) for index in range(len(sentence))])
+def posTag(sentence):
+    tags = classifier.predict([features(sentence, index) for index in range(len(sentence))])
     return zip(sentence, tags)
 
 if __name__ == "__main__":
