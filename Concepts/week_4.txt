@@ -1,0 +1,200 @@
+------------------------------------------------------
+SOURCES REFERRED TO IN THIS WEEK
+------------------------------------------------------
+
+1. https://en.wikipedia.org/wiki/Viterbi_algorithm
+2. https://www.youtube.com/watch?v=ECu_KQV3V30
+3. https://www.youtube.com/watch?v=WqGUa54x8wE
+4. https://www.youtube.com/watch?v=Bu7oSlNCmdU
+5. Pdf and Research papers linked thereof in directory.
+
+------------------------------------------------------
+PROGRAMMING TASKS DONE
+------------------------------------------------------
+
+1. Completed training a english POS Tagger  using Decision Tree
+   classifier using the libraries : NLTK, SciKit-Learn, pprint.
+2. Analyzed the features used in the above model and understood them.
+3. Started training another English language POS tagger using N-Gram
+   Model(Mainly UniGram, BiGram, TriGram and a 'Default'Gram as a heuristic).
+4. Trying to do the above in point 3 with Brown NLTK Corpora.
+5. Analyzing the Indian NLTK Corpora.
+6. Tried to make functions regarding transmission and emission probabilities.
+
+------------------------------------------------------
+
+Last week, we discussed about the generative models and the noisy channel. We
+also looked at how to incorporate them with a N-gram Hidden Markov Model(HMM).
+We specifically looked at the Trigram and Bigram HMMs and estimated the
+transition and emission probabilities for the same. We then tried to estimate
+the function we wanted to maximize.
+
+In this week, we will now actually look at how to estimate the function
+effiently using the Viterbi's Algorithm.
+
+------------------------------------------------------
+VITERBI'S ALGORITHM - A DYNAMIC PROGRAMMING ALGORITHM
+------------------------------------------------------
+
+The Viterbi's Algorithm will find us the most probable sequence of the
+following function :
+
+f(x1...xn) = arg max P(x1...xn, y1...yn) (over all possible y1...yn)
+
+We are going to solve the problem of finding the most likely sequence of
+labels given a set of observations x1...xn. That is, we are to find out
+
+  arg max P(x1...xn, y1...y(n+1))(over all possible y1...y(n+1))
+
+The probability here is expressed in terms of the transition and emission
+probabilities that was mentioned in the last week. The formula for the
+probability of a sequence of labels given a sequence of observations
+over n time steps is
+
+P(x1...xn,y1...y(n+1)) = multiplication(from i=1 to n+1)q(yi|y(i-2),y(i-1))
+                         *multiplication(from i=1 to n)e(xi|yi)
+
+Before looking at an optimized algorithm to solve this problem, let us
+first look at a simple brute force approach to this problem. Basically,
+we need to find out the most probable label sequence given a set of
+observations out of a finite set of possible sequences of labels. Let’s
+look at the total possible number of sequences for a small example for
+our previous example problem and also for a part of speech tagging problem.
+
+Say we have the following set of observations for the example problem.
+
+    Noise Quiet Noise
+
+We have two possible labels, Asleep and Awake. The possible sequence of
+labels for the observations above are:
+
+    Awake       Awake     Awake
+    Awake       Awake     Asleep
+    Awake       Asleep    Awake
+    Awake       Asleep    Asleep
+    Asleep      Awake     Awake
+    Asleep      Awake     Asleep
+    Asleep      Asleep    Awake
+    Asleep      Asleep    Asleep
+
+In all we can have 2^3 = 8 possible sequences. This might not seem like very
+many, but if we increase the number of observations over time, the number of
+sequences would increase exponentially. This is the case when we only had two
+possible labels. What if we have more, as in the case with part of speech
+tagging, where there so many words to tag in general!
+
+For example, consider the sentence: the dog barks ; and assuming that the
+set of possible tags are {D, N, V}, let us look at some of the possible tag
+sequences:
+
+    D     D     D
+    D     D     N
+    D     D     V
+    D     N     D
+    D     N     N
+    D     N     V ... etc
+
+Here, we would have 3^3 = 27 possible tag sequences. And as you can see,
+the sentence was extremely short and the number of tags weren’t very many.
+In practice, we can have sentences that might be much larger than just
+three words. Then the number of unique labels at our disposal would also
+be too high to follow this enumeration approach and find the best possible
+tag sequence this way.
+
+So the exponential growth in the number of sequences implies that for any
+reasonable length sentence, the brute force approach would not work out as
+it would take too much time to execute.
+
+Instead of this brute force approach, we will see that we can find the
+highest probable tag sequence efficiently using a dynamic programming
+algorithm known as the Viterbi Algorithm.
+
+Let us first define some terms that would be useful in defining the algorithm
+itself. We already know that the probability of a label sequence given a
+set of observations can be defined in terms of the transition probability
+and the emission probability. Mathematically, it is
+
+P(x1...xn,y1...y(n+1)) = multiplication(from i=1 to n+1)q(yi|y(i-2),y(i-1))
+                         *multiplication(from i=1 to n)e(xi|yi)
+
+Let us look at a truncated version of this which is
+
+r(y1...yk) = multiplication(from i=1 to k)q(yi|y(i-2),y(i-1))
+                         *multiplication(from i=1 to k)e(xi|yi)
+
+and let us call this the cost of a sequence of length k.
+
+So the definition of “r” is simply considering the first k terms off of
+the definition of probability where k belongs to {1..n} and for any label
+sequence y1...yk.
+
+Next we have the set S(k, u, v) which is basically the set of all label
+sequences of length k that end with the bigram (u, v), i.e,. set of
+sequences y1...yk such that y(k-1) = u and yk = v.
+
+Finally, we define the term g(k, u, v) which is basically the sequence
+with the maximum cost.
+
+g(k, u, v) = max r(y1...yk)(over all sequences y1...yk belonging to S(k,u,v))
+
+The main idea behind the Viterbi Algorithm is that we can calculate the
+values of the term g(k, u, v) efficiently in a recursive, memoized fashion.
+In order to define the algorithm recursively, let us look at the base cases
+for the recursion.
+
+    g(0, *, *) = 1
+    g(0, u, v) = 0
+
+Since we are considering a trigram HMM, we would be considering all of
+the trigrams as a part of the execution of the Viterbi Algorithm.
+
+Now, we can start the first trigram window from the first three words of
+the sentence but then the model would miss out on those trigrams where the
+first word or the first two words occurred independently. For that reason,
+we consider two special start symbols as * and so our sentence becomes
+
+      *    *    x1   x2   x3    .......  xn
+
+And the first trigram we consider then would be (*, *, x1) and the second
+one would be (*, x1, x2).
+
+Now that we have all our terms in place, we can finally look at the recursive
+definition of the algorithm which is basically the heart of the algorithm.
+
+g(k, u, v) = max( g(k-1, w, u) * p(v|w,u) * e(xk | v))
+             (over all possible w in sequence K)
+
+where g(k, u, v) = Maximum cost of any sequence of length k which ends in
+                   bigram(u, v) and hence belongs to the set S(k, u, v).
+
+      g(k-1, w, u) = Maximum cost of any sequence of length k-1 ending in
+                     bigram(w, u) and we iterate on all possible values of w.
+
+      q(v | w, u) = Transition probability of having a trigram end in v given
+                    previous two terms were u and w.
+
+      e(xk | v) = Emission probability of making an observation xk given
+                  the label as v.
+
+      We have all these sequences of length k y1...yk where y(k-2) = w and
+      we try out all possibilities for w.
+
+This definition is clearly recursive, because we are trying to calculate
+one g term and we are using another one with a lower value of k in the
+recurrence relation for it.
+
+Finally, the answer we required would be
+
+max P(x1...xn, y1...y(n+1)) (over all y1...y(n+1))
+     = max(g(n, u, v) * q(STOP | u, v))(over all possible u, v in sequence K)
+
+Every sequence would end with a special STOP symbol. For the trigram model,
+we would also have two special start symbols “*” in the beginning.
+
+------------------------------------------------------
+
+In the next week's B.Tech Project report, we will summarize this algorithm
+wholly and would give the pseudocode and running time analysis for this
+algorithm.
+
+------------------------------------------------------
