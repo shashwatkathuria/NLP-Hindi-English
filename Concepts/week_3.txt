@@ -220,3 +220,8 @@ next week's B.Tech Project Report.
 f(x1...xn) = arg max P(x1...xn, y1...yn) (over all possible y1...yn)
 
 --------------------------------------
+
+In the next week's B.Tech Project Report, we will intergrate all these
+concepts together so as to get the answer we need efficiently.
+
+--------------------------------------- 
