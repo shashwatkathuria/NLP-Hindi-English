@@ -161,8 +161,8 @@ one would be (*, x1, x2).
 Now that we have all our terms in place, we can finally look at the recursive
 definition of the algorithm which is basically the heart of the algorithm.
 
-g(k, u, v) = max( g(k-1, w, u) * p(v|w,u) * e(xk | v))
-             (over all possible w in sequence K)
+g(k, u, v) = max( g(k-1, w, u) * q(v|w,u) * e(xk | v))
+             (over all possible w in tag space)
 
 where g(k, u, v) = Maximum cost of any sequence of length k which ends in
                    bigram(u, v) and hence belongs to the set S(k, u, v).
@@ -186,7 +186,7 @@ recurrence relation for it.
 Finally, the answer we required would be
 
 max P(x1...xn, y1...y(n+1)) (over all y1...y(n+1))
-     = max(g(n, u, v) * q(STOP | u, v))(over all possible u, v in sequence K)
+     = max(g(n, u, v) * q(STOP | u, v))(over all possible u, v in tag space)
 
 Every sequence would end with a special STOP symbol. For the trigram model,
 we would also have two special start symbols “*” in the beginning.
