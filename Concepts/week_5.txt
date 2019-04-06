@@ -1,0 +1,189 @@
+-----------------------------------------------------------------
+SOURCES REFERRED TO IN THS WEEK
+-----------------------------------------------------------------
+
+1. https://en.wikipedia.org/wiki/Decision_tree
+2. https://www.nltk.org/book/ch06.html
+3. https://www.youtube.com/watch?v=mHEKZ8jv2SY
+4. Another research paper added in the directory regarding
+   POS tagging in decision trees.
+
+-----------------------------------------------------------------
+PROGRAMMING TASKS DONE
+-----------------------------------------------------------------
+
+1. Implemented Hindi on the Decision Tree program made on English
+   using the Indian NLTK Corpora of Hindi language using Sci-Kit
+   Learn, NLTK and pprint libraries.
+2. Started searching for more corpus of hindi pos tagged corpus,
+   to train the above model better.
+3. Completed Training another English language POS tagger using N-Gram
+   Model(Mainly UniGram, BiGram, TriGram and a 'Default'Gram as a heuristic).
+4. Started programming Viterbi's Algorithm.
+5. Almost done programming emission and transition probabilities in the
+   trigram HMM Model used by Viterbi's Algorithm.
+6. Achieved ~77% accuracy on the Hindi POS Tagger using Decision Trees in 1.
+
+-----------------------------------------------------------------
+
+Last week, we discussed about the basics and the logic behind the Viterbi's
+Algorithm. We also discussed about the shortcomings of the Brute-Force
+algorithm which would not be feasible for such a large number of word and
+tag space. A recursive formula was mentioned and the way we would include
+it in our final computations to achieve our final result. The same are
+mentioned below.
+
+g(k, u, v) = max( g(k-1, w, u) * q(v|w,u) * e(xk | v))
+             (over all possible w in tag space)
+
+max P(x1...xn, y1...y(n+1)) (over all y1...y(n+1))
+     = max(g(n, u, v) * q(STOP | u, v))(over all possible u, v in tag space)
+
+The meaning of each of the terms are mentioned in the last week's report.
+
+In this week, we will discuss about the time complexity of the pseudocode
+and time complexity for the Viterbi's Algorithm.
+
+-----------------------------------------------------------------
+PSEUDOCODE AND TIME COMPLEXITY ANALYSIS FOR VITERBI'S ALGORITHM
+-----------------------------------------------------------------
+-----------------
+PSEUDOCODE
+-----------------
+
+Input : a sentence x1...xn, parameters q(s | u, v) and e(x | s).
+
+Initialization : Set g(0, *, *) = 1, and g(0, u, v) = 0 for all (u, v) such
+that u ≠ * or v ≠ *.
+
+Algorithm :
+
+  For k = 1...n,
+
+      - For u in tag space, v in tag space,
+
+            g(k, u, v) = max( g(k-1, w, u) * q(v|w,u) * e(xk | v))
+                         (over all possible w in tag space)
+
+  Return max(g(n, u, v) * q(STOP | u, v))(over all possible u, v in tag space)
+
+
+The algorithm first fills in the g(k ,u, v) values in using the recursive
+definition. It then uses the identity described before to calculate the
+highest probability for any sequence.
+
+-----------------
+TIME COMPLEXITY
+-----------------
+
+The running time for the algorithm is O( n * (|K| ^ 3) ) where K is the tag
+space, hence it is linear in the length of the sequence and cubic in the
+number of tags in the tag space.
+
+For our previous example involving Peter, which is a bigram HMM, the
+recursive formula for the Viterbi's Algorithm will be modified slightly as
+follows.
+
+g(k, v) = {g(k-1, u) * q(v | u) * e(xk | v)}
+          (for all u in K, i.e, for all possible labels in the corpus)
+
+where g(k, v) = Maximum cost of any sequence of length k ending with a
+                label v
+
+      g(k-1, u) = Maximum cost of any sequence of length k-1 ending with
+                  label u
+
+      q(v | u) = Transition probability of moving from label u to v
+
+      e(xk | v) = Emission probability of observing x(sub-k) at time-step k
+                  given the label was v
+
+This one is extremely similar to the one we saw before for the trigram model,
+except that now we are only concerning ourselves with the current label and
+the one before, instead of two before. The complexity of the algorithm now
+becomes O( n  * (|K| ^ 2) ).
+
+A small example involving such calculations along with the trigram HMM
+Viterbi's Algorithm can be seen visually in the video link given below:
+    https://www.youtube.com/watch?v=mHEKZ8jv2SY
+
+-----------------------------------------------------------------
+
+In this week's meeting with Prof. Gaurav Harit regarding our progress, we
+showed a model we made for english language using a Decision Tree Classifier.
+
+Prof. Gaurav Harit told us to implement it in Hindi as it does overfitting
+and to compare it with the Trigram HMM based model in the end.
+
+We have started programming for the Trigram HMM Model using Viterbi's
+Algorithm, and are trying to make the same decision tree classifier for
+Hindi language.
+
+Now, we will discuss about how a decision tree works and will explain the
+basics and complexities behind it in the context of a POS Tagger.
+
+-----------------------------------------------------------------
+DECISION TREE - POS TAGGING
+-----------------------------------------------------------------
+
+A decision tree is a decision support tool that uses a tree-like model of
+decisions and their possible consequences, including chance event outcomes,
+resource costs, and utility. It is one way to display an algorithm that only
+contains conditional control statements.
+
+Decision trees are commonly used in operations research, specifically in
+decision analysis, to help identify a strategy most likely to reach a goal,
+but are also a popular tool in machine learning.
+
+A decision tree is a flowchart-like structure in which each internal node
+represents a "test" on an attribute (e.g. whether a coin flip comes up heads
+or tails), each branch represents the outcome of the test, and each leaf
+node represents a class label (decision taken after computing all attributes).
+The paths from root to leaf represent classification rules.
+
+A decision tree consists of three types of nodes:
+
+      1. Decision nodes – typically represented by squares
+      2. Chance nodes – typically represented by circles
+      3. End nodes – typically represented by triangles
+
+This flowchart consists of decision nodes, which check feature values, and
+leaf nodes, which assign labels. To choose the label for an input value, we
+begin at the flowchart's initial decision node, known as its root node. This
+node contains a condition that checks one of the input value's features, and
+selects a branch based on that feature's value. Following the branch that
+describes our input value, we arrive at a new decision node, with a new
+condition on the input value's features. We continue following the branch
+selected by each node's condition, until we arrive at a leaf node which
+provides a label for the input value.
+
+Once we have a decision tree, it is straightforward to use it to assign
+labels to new input values. What's less straightforward is how we can build
+a decision tree that models a given training set. But before we look at the
+learning algorithm for building decision trees, we'll consider a simpler task:
+picking the best "decision stump" for a corpus. A decision stump is a decision
+tree with a single node that decides how to classify inputs based on a single
+feature. It contains one leaf for each possible feature value, specifying the
+class label that should be assigned to inputs whose features have that value.
+In order to build a decision stump, we must first decide which feature should
+be used. The simplest method is to just build a decision stump for each
+possible feature, and see which one achieves the highest accuracy on the
+training data, although there are other alternatives. Once we've picked a
+feature, we can build the decision stump by assigning a label to each leaf
+based on the most frequent label for the selected examples in the training
+set (i.e., the examples where the selected feature has that value).
+
+Given the algorithm for choosing decision stumps, the algorithm for growing
+larger decision trees is straightforward. We begin by selecting the overall
+best decision stump for the classification task. We then check the accuracy
+of each of the leaves on the training set. Leaves that do not achieve
+sufficient accuracy are then replaced by new decision stumps, trained on the
+subset of the training corpus that is selected by the path to the leaf.
+
+------------------------------------------------
+
+In the next week, we will continue more on the decision tree approach
+and the programming progress we make by implementing it and also the
+Hidden Markov Model Viterbi's Algorithm.
+
+------------------------------------------------
