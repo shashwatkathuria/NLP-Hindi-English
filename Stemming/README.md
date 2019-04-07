@@ -1,3 +1,0 @@
-# STEMMING - Natural Language Processing
-------------------------------------------------
-
