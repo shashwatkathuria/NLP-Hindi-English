@@ -43,22 +43,22 @@ def main():
     #     s += 1
     #
     # print(s)
-    # viterbiAlgorithm(sentencesList[0], allTags, emissionProbabilityDict, transitionProbabilityDict)
+    # viterbiAlgorithm(sentencesList[1], allTags, emissionProbabilityDict, transitionProbabilityDict)
 
-    # for sentence in sentencesList:
-    #     viterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict)
+    for sentence in sentencesList:
+        viterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict)
 
 def viterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict):
 
     sentence = [ u'*', u'*' ] + sentence
     initialLength = len(sentence)
+    backtrackingDP = defaultdict(list)
     dpDict = {}
     dpDict[0, '*', '*'] = 1
 
-    allTags = [ u'*' ] + list(allTags)
     # print(allTags)
-    for u in allTags:
-        for v in allTags:
+    for u in ([ u'*' ] + list(allTags)):
+        for v in ([ u'*' ] + list(allTags)):
             if u != u'*' or v != u'*':
                 dpDict[0, u, v] = 1
 
@@ -71,35 +71,16 @@ def viterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProba
             for u in allTags:
                 possibilities = []
                 for w in allTags:
-                    # print()
-                    # if dpDict[k - 1 , w, u] != 0:
-                    #     print "dpDict : ",
-                    #     print dpDict[k - 1 , w, u]
-                    #     print(" K : " + str(k))
-                    # print "transitionProbabilityDict : ",
-                    # print transitionProbabilityDict[(v, w, u)]
-                    # print "transitionProbabilityDict : ",
-                    # print transitionProbabilityDict[(v, w, u)]
-                    # if emissionProbabilityDict[sentence[k] + '|' + v] > 0:
-                    #     print(sentence[k])
-                    # print "emissionProbabilityDict : ",
-                    # print 1 + emissionProbabilityDict[sentence[k] + '|' + v]
-                    # print("AMNS::::")
-                    # print(dpDict[k - 1 , w, u] * transitionProbabilityDict[(v, w, u)] * (1 + emissionProbabilityDict[sentence[k] + '|' + v]))
-                    possibility = dpDict[k - 1 , w, u] * transitionProbabilityDict[(v, w, u)] * (1 + emissionProbabilityDict[sentence[k] + '|' + v])
-                    if possibility > 1:
-                        print "transitionProbabilityDict : ",
-                        print transitionProbabilityDict[(v, w, u)]
-                        print "emissionProbabilityDict : ",
-                        print 1 + emissionProbabilityDict[sentence[k] + '|' + v]
-
-                        print(k, u, v,"Hello", possibility)
-                        return
+                    possibility = dpDict[k - 1 , w, u] * transitionProbabilityDict[(v, w, u)] * (0.0001 + emissionProbabilityDict[sentence[k] + '|' + v])
                     # print(possibility)
-                    possibilities.append(possibility)
+                    possibilities.append((possibility, w))
 
-                maxUVgivenK = max(possibilities)
-                dpDict[k, u, v] = maxUVgivenK
+                maxUVgivenK = max(possibilities, key = lambda element:element[0])
+                dpDict[k, u, v] = maxUVgivenK[0]
+                backtrackW = maxUVgivenK[1]
+                backtrackingDP[u, v] += [backtrackW]
+                if k == initialLength - 1:
+                    backtrackingDP[u, v] += [u, v]
                 # print((k, u, v),str(dpDict[k, u, v]))
     # s = 0
     # for key in dpDict:
@@ -107,9 +88,26 @@ def viterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProba
     #     print(key, dpDict[key])
     #
     # print(s)
+    # backtrackingDP
+    maxPossibilitiesList = []
+    s = 0
+    for key in dpDict:
+        s += 1
+        if (initialLength - 1 in key) and dpDict[key]!=0:
+            # print(key, dpDict[key])
+            maxPossibilitiesList.append((key[1:], dpDict[key]))
 
-
-    pass
+    ans = max(maxPossibilitiesList, key = lambda element:element[1])
+    # print(ans)
+    # print(backtrackingDP[ans[0]][3:])
+    print()
+    print()
+    tagsAssigned = backtrackingDP[ans[0]][3:]
+    sentence = sentence[2:]
+    print(len(tagsAssigned), len(sentence))
+    for i in range(len(sentence)):
+        print sentence[i] + " " + tagsAssigned[i],
+    # print(s)
 
 
 def calculateTransitionProbabilities(trainFile):
@@ -153,42 +151,25 @@ def calculateTransitionProbabilities(trainFile):
             s1+=1
             # Getting the bigrams in the exact order by zipping through the tags
             bigramSentenceList = zip(tags,tags[1:])
-            # print(len(bigramSentenceList))
+
             # Getting the trigrams in the exact order by zipping through the tags
             trigramSentenceList = zip(tags, tags[1:], tags[2:])
-            # print(len(trigramSentenceList))
-            # print(bigramSentenceList)
-            # print(trigramSentenceList)
-            # return
-            # print(tags)
-            # return
+
             for bigram in bigramSentenceList:
-                # print(bigram)
-                # if bigram == (u'JJ', u'NN'):
-                #     print(bigramTransitionCountDict[bigram])
                 bigramTransitionCountDict[bigram] += 1
-                # print(bigramTransitionCountDict[bigram])
+
 
             for trigram in trigramSentenceList:
-                # print(trigram)
-                # if trigram == (u'JJ', u'NN', u'PSP'):
-                    # print(trigramTransitionCountDict[trigram])
                 trigramTransitionCountDict[trigram] += 1
-                # print(trigramTransitionCountDict[trigram])
 
     # Calculating the transition probabilities finally
     for trigram in trigramTransitionCountDict:
         uvBigram = trigram[:-1]
         sState = (trigram[-1],)
         keySgivenUV = sState + uvBigram
-        # print(trigram, trigramTransitionCountDict[trigram])
-        # print(uvBigram, bigramTransitionCountDict[bigram])
-        transitionProbability = trigramTransitionCountDict[trigram] / bigramTransitionCountDict[uvBigram]
-        # print(keySgivenUV, transitionProbability)
-        if transitionProbability > 1:
-            print(":nbdi")
-            print(trigram, trigramTransitionCountDict[trigram])
-            print(uvBigram, bigramTransitionCountDict[bigram])
+
+        transitionProbability = (trigramTransitionCountDict[trigram] + 1) / (bigramTransitionCountDict[uvBigram] + 22)
+
         transitionProbabilityDict[keySgivenUV] = transitionProbability
 
     # print("----------------------")
@@ -244,7 +225,7 @@ def calculateEmissionProbabilities(trainFile):
         tagAndWord = key.split('|')
         tag = tagAndWord[0]
         word = tagAndWord[1]
-        emissionProbability = emissionCountDict[tag + '|' + word] / separateTagCountDict[tag]
+        emissionProbability = (emissionCountDict[tag + '|' + word] + 1) / (separateTagCountDict[tag] + 22)
         emissionProbabilityDict[word + '|' + tag] = emissionProbability
 
     return emissionProbabilityDict
