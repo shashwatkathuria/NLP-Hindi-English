@@ -15,7 +15,6 @@ def main():
     for line in inputSentences:
         sentence = []
         tokens = line.split()
-        # print(tokens)
         for token in tokens:
             word = token.split('|')[0].strip()
             sentence.append(token)
@@ -65,14 +64,17 @@ def viterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProba
 
     tagsAssigned = []
     for k in range(1, initialLength):
-        # print(" K : " + str(k))
-        # print(sentence[k])
+        print(" K : " + str(k))
+        print(sentence[k])
         for v in allTags:
             for u in allTags:
                 possibilities = []
                 for w in allTags:
-                    possibility = dpDict[k - 1 , w, u] * transitionProbabilityDict[(v, w, u)] * (0.0001 + emissionProbabilityDict[sentence[k] + '|' + v])
-                    # print(possibility)
+                    # if emissionProbabilityDict[sentence[k] + '|' + v] == 0:
+                    #     print("HELLO")
+                    #     return
+                    possibility = dpDict[k - 1 , w, u] * transitionProbabilityDict[(v, w, u)] * ( 0.000000001 + emissionProbabilityDict[sentence[k] + '|' + v])
+                    print(possibility)
                     possibilities.append((possibility, w))
 
                 maxUVgivenK = max(possibilities, key = lambda element:element[0])
@@ -226,6 +228,7 @@ def calculateEmissionProbabilities(trainFile):
         tag = tagAndWord[0]
         word = tagAndWord[1]
         emissionProbability = (emissionCountDict[tag + '|' + word] + 1) / (separateTagCountDict[tag] + 22)
+        # print(emissionProbability)
         emissionProbabilityDict[word + '|' + tag] = emissionProbability
 
     return emissionProbabilityDict
