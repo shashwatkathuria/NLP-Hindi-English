@@ -1,4 +1,5 @@
-import nltk, pprint
+# -*- coding: utf-8 -*-
+import nltk, pprint, codecs
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.pipeline import Pipeline
@@ -13,18 +14,25 @@ classifier = Pipeline([
 
 def main():
 
+    trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
     # Getting the nltk corpus treebank consisting of tagged sentences
-    taggedSentences = nltk.corpus.treebank.tagged_sents()
+    taggedSentences = getTaggedSentences(trainFile)[:-20000]
+    # print(taggedSentences[0])
+    # return
 
     # Printing the number of tagged sentences and words in the same
     print("Number of tagged sentences in dataset : " + str(len(taggedSentences)))
-    print("Number of tagged words in dataset     : " + str(len(nltk.corpus.treebank.tagged_words())))
+    # print("Number of tagged words in dataset     : " + str(len(nltk.corpus.treebank.tagged_words())))
 
     # # Printing an example illustrating the features used in the model
-    # pprint.pprint(features(['This', 'is', 'a', 'sentence'], 2))
-
+    pprint.pprint(features(['मेरा', 'नाम', 'शाश्वत', 'कथूरिया', 'है', '2011'], 2))
+    x = features(['मेरा', 'नाम', 'शाश्वत', 'कथूरिया', 'है', '2011'], 2)
+    for key in x:
+        print(key)
+        print(x[key])
+    # return
     # Training 75% of tagged sentences as it is an ideal partition
-    cutoff = int(.75 * len(taggedSentences))
+    cutoff = int(.85 * len(taggedSentences))
 
     # Splitting the same to learn from 75% and then test on 25% of data
     trainingSentences = taggedSentences[:cutoff]
@@ -51,11 +59,13 @@ def main():
     print("\nThe accuracy of the trained model is : " + str(classifier.score(XTest, yTest)))
 
     # Printing the sentence to be POS tagged
-    sentence = "My name is Shashwat Kathuria."
+    sentence = "तुलना के लिए सन् 2011 की जनगणना में भारत के बिहार राज्य में जन-घनत्व 1102 व्यक्ति प्रति वर्ग किमी था"
     print("\nTagging the sentence : " + sentence + "\n")
 
     # Tagging the sentence using the trained model
-    print(posTag(nltk.word_tokenize(sentence)))
+    for (word, tag) in posTag(nltk.word_tokenize(sentence)):
+        print(word) ,
+        print(tag)
 
 def features(sentence, index):
     """Function to return the features to be used in the model. Index is the index of the specific word in the sentence."""
@@ -65,9 +75,6 @@ def features(sentence, index):
         'word': sentence[index],
         'isFirst': index == 0,
         'isLast': index == len(sentence) - 1,
-        'isCapitalized': sentence[index][0].upper() == sentence[index][0],
-        'isAllCaps': sentence[index].upper() == sentence[index],
-        'isAllLower': sentence[index].lower() == sentence[index],
         'prefix1': sentence[index][0],
         'prefix2': sentence[index][:2],
         'prefix3': sentence[index][:3],
@@ -77,8 +84,7 @@ def features(sentence, index):
         'previousWord': '' if index == 0 else sentence[index - 1],
         'nextWord': '' if index == len(sentence) - 1 else sentence[index + 1],
         'hasHyphen': '-' in sentence[index],
-        'isNumeric': sentence[index].isdigit(),
-        'capitalsInside': sentence[index][1:].lower() != sentence[index][1:]
+        'isNumeric': sentence[index].isdigit()
     }
 
 def untag(taggedSentence):
@@ -104,5 +110,41 @@ def posTag(sentence):
     tags = classifier.predict([features(sentence, index) for index in range(len(sentence))])
     return zip(sentence, tags)
 
+
+def getTaggedSentences(trainFile):
+
+    allTags = set([])
+    sentencesList = []
+    # Iterating through the lines of the input file
+    for line in trainFile.readlines():
+
+        # Getting tokens from each such line
+        tokens = line.split()
+
+        sentence = []
+
+        # Initializing a list for the tags observed in the line
+        tags = []
+
+        # For each token in that line
+        for token in tokens:
+
+            word = token.split('|')[0].strip()
+            # Extracting the tag by splitting and stripping according to the file
+            tag = token.split('|')[2].split('.')[0].strip(':?').strip()
+            # Giving exact tags in training data a common parent tag for less complexity
+            # and more accuracy
+            if (tag == 'I-NP' or tag == 'B-NP' or tag == 'O'):
+                tag = 'NN'
+
+            sentence.append((word, tag))
+
+            allTags = allTags | set([tag])
+
+            # Appending the tag to the list of tags
+            tags.append(tag)
+        sentencesList.append(sentence)
+
+    return sentencesList
 if __name__ == "__main__":
     main()
