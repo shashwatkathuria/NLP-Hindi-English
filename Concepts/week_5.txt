@@ -22,7 +22,7 @@ PROGRAMMING TASKS DONE
 4. Started programming Viterbi's Algorithm.
 5. Almost done programming emission and transition probabilities in the
    trigram HMM Model used by Viterbi's Algorithm.
-6. Achieved ~77% accuracy on the Hindi POS Tagger using Decision Trees in 1.
+6. Achieved ~87% accuracy on the Hindi POS Tagger using Decision Trees in 1.
 
 -----------------------------------------------------------------
 
