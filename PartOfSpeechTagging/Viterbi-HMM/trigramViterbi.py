@@ -5,13 +5,26 @@ import codecs
 from collections import defaultdict
 
 def main():
+
+    # Opening the input training file
     trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
+    # Getting the emission probabilities
     emissionProbabilityDict = calculateEmissionProbabilities(trainFile)
+    # Opening the input training file
     trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
+    # Getting the transition probabilities and all the tags (states)
     transitionProbabilityDict, allTags = calculateTransitionProbabilities(trainFile)
+
+    # Getting the input sentences file
     inputSentences = codecs.open("input.txt", mode = "r", encoding = "utf-8")
 
+    # Initializing list for storing input sentences
     sentencesList = []
+    for key in transitionProbabilityDict:
+        print(key, transitionProbabilityDict[key])
+
+    assert False
+    # Getting the input sentences
     for line in inputSentences:
         sentence = []
         tokens = line.split()
@@ -20,34 +33,13 @@ def main():
             sentence.append(token)
 
         sentencesList.append(sentence)
-
-    # print(allTags)
-
-    # for sentence in sentencesList:
-    #     for word in sentence:
-    #         print word,
-    #     print(" ")
-
-    # s = 0
-    # for key in emissionProbabilityDict:
-    #     print(key,emissionProbabilityDict[key])
-    #     s += 1
-    #
-    # print(s)
-
-    # s = 0
-    # for key in transitionProbabilityDict:
-    #     if transitionProbabilityDict[key] > 1:
-    #         print(key,transitionProbabilityDict[key])
-    #     s += 1
-    #
-    # print(s)
-    # viterbiAlgorithm(sentencesList[1], allTags, emissionProbabilityDict, transitionProbabilityDict)
-
+    print(sentencesList)
     for sentence in sentencesList:
-        viterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict)
+        x = trigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict)
+        print(x)
 
-def viterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict):
+
+def trigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict):
 
     sentence = [ u'*', u'*' ] + sentence
     initialLength = len(sentence)
@@ -64,17 +56,14 @@ def viterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProba
 
     tagsAssigned = []
     for k in range(1, initialLength):
-        print(" K : " + str(k))
-        print(sentence[k])
+        # print(" K : " + str(k))
+        # print(sentence[k])
         for v in allTags:
             for u in allTags:
                 possibilities = []
                 for w in allTags:
-                    # if emissionProbabilityDict[sentence[k] + '|' + v] == 0:
-                    #     print("HELLO")
-                    #     return
-                    possibility = dpDict[k - 1 , w, u] * transitionProbabilityDict[(v, w, u)] * ( 0.000000001 + emissionProbabilityDict[sentence[k] + '|' + v])
-                    print(possibility)
+
+                    possibility = dpDict[k - 1 , w, u] * transitionProbabilityDict[(v, w, u)] * (emissionProbabilityDict[sentence[k] + '|' + v])
                     possibilities.append((possibility, w))
 
                 maxUVgivenK = max(possibilities, key = lambda element:element[0])
@@ -83,33 +72,21 @@ def viterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProba
                 backtrackingDP[u, v] += [backtrackW]
                 if k == initialLength - 1:
                     backtrackingDP[u, v] += [u, v]
-                # print((k, u, v),str(dpDict[k, u, v]))
-    # s = 0
-    # for key in dpDict:
-    #     s += 1
-    #     print(key, dpDict[key])
-    #
-    # print(s)
-    # backtrackingDP
+
     maxPossibilitiesList = []
     s = 0
     for key in dpDict:
         s += 1
         if (initialLength - 1 in key) and dpDict[key]!=0:
-            # print(key, dpDict[key])
             maxPossibilitiesList.append((key[1:], dpDict[key]))
 
     ans = max(maxPossibilitiesList, key = lambda element:element[1])
-    # print(ans)
-    # print(backtrackingDP[ans[0]][3:])
-    print()
-    print()
     tagsAssigned = backtrackingDP[ans[0]][3:]
     sentence = sentence[2:]
-    print(len(tagsAssigned), len(sentence))
-    for i in range(len(sentence)):
-        print sentence[i] + " " + tagsAssigned[i],
-    # print(s)
+    # for i in range(len(sentence)):
+    #     print sentence[i] + " " + tagsAssigned[i],
+
+    return zip(sentence, tagsAssigned)
 
 
 def calculateTransitionProbabilities(trainFile):
@@ -186,7 +163,7 @@ def calculateTransitionProbabilities(trainFile):
 
 def calculateEmissionProbabilities(trainFile):
 
-    emissionProbabilityDict = defaultdict(int)
+    emissionProbabilityDict = defaultdict(lambda :  0.00000001)
     emissionCountDict = defaultdict(int)
     separateTagCountDict = defaultdict(int)
 
@@ -232,7 +209,6 @@ def calculateEmissionProbabilities(trainFile):
         emissionProbabilityDict[word + '|' + tag] = emissionProbability
 
     return emissionProbabilityDict
-
 
 if __name__ == "__main__":
     main()
