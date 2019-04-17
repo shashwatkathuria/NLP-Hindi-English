@@ -1,14 +1,16 @@
+# -*- coding: utf-8 -*-
+# Importing the libraries required
 import nltk, pprint
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.pipeline import Pipeline
 
-# TRAINING POS TAGGER IN ENGLISH USING THE ABOVE LIBRARIES
+# TRAINING DECISION TREE POS TAGGER IN ENGLISH USING THE ABOVE LIBRARIES
 
 # Initializing the classifier to be used
 classifier = Pipeline([
-    ('vectorizer', DictVectorizer(sparse=False)),
-    ('classifier', DecisionTreeClassifier(criterion='entropy'))
+    ('vectorizer', DictVectorizer(sparse = False)),
+    ('classifier', DecisionTreeClassifier(criterion = 'entropy'))
 ])
 
 def main():
@@ -101,6 +103,7 @@ def transformToDataset(taggedSentences):
     return X, y
 
 def posTag(sentence):
+    """Function to return the tags as predicted by the model."""
     tags = classifier.predict([features(sentence, index) for index in range(len(sentence))])
     return zip(sentence, tags)
 
