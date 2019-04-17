@@ -21,33 +21,11 @@ def main():
 
         sentencesList.append(sentence)
 
-    # print(allTags)
-
-    # for sentence in sentencesList:
-    #     for word in sentence:
-    #         print word,
-    #     print(" ")
-
-    # s = 0
-    # for key in emissionProbabilityDict:
-    #     print(key,emissionProbabilityDict[key])
-    #     s += 1
-    #
-    # print(s)
-
-    # s = 0
-    # for key in transitionProbabilityDict:
-    #     if transitionProbabilityDict[key] > 1:
-    #         print(key,transitionProbabilityDict[key])
-    #     s += 1
-    #
-    # print(s)
-    # viterbiAlgorithm(sentencesList[1], allTags, emissionProbabilityDict, transitionProbabilityDict)
-
     for sentence in sentencesList:
-        viterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict)
+        x = bigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict)
+        print(x)
 
-def viterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict):
+def bigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict):
 
     sentence = [ u'*'] + sentence
     initialLength = len(sentence)
@@ -72,7 +50,7 @@ def viterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProba
                     # if emissionProbabilityDict[sentence[k] + '|' + v] == 0:
                     #     print("HELLO")
                     #     return
-                    possibility = dpDict[k - 1 , u] * transitionProbabilityDict[(v, u)] * ( 0.000000001 + emissionProbabilityDict[sentence[k] + '|' + v])
+                    possibility = dpDict[k - 1 , u] * transitionProbabilityDict[(v, u)] * (emissionProbabilityDict[sentence[k] + '|' + v])
                     # print(possibility)
                     possibilities.append((possibility, u))
 
@@ -99,20 +77,16 @@ def viterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProba
             maxPossibilitiesList.append((key[1], dpDict[key]))
 
     ans = max(maxPossibilitiesList, key = lambda element:element[1])
-    # print(ans)
-    # print(backtrackingDP[ans[0]][3:])
-    # print()
-    # print()
     tagsAssigned = backtrackingDP[ans[0]][1:]
-    # print(tagsAssigned)
     sentence = sentence[1:]
-    print(len(tagsAssigned), len(sentence))
-    for i in range(len(sentence)):
-        print sentence[i] + "  " + tagsAssigned[i] + "  " ,
+    # print(len(tagsAssigned), len(sentence))
+    # for i in range(len(sentence)):
+        # print sentence[i] + "  " + tagsAssigned[i] + "  " ,
     # print(s)
+    return zip(sentence, tagsAssigned)
 
 
-def calculateTransitionProbabilities(trainFile):
+def calculateTransitionProbabilities(trainFile, Lambda):
 
     transitionProbabilityDict = defaultdict(int)
     bigramTransitionCountDict = defaultdict(int)
@@ -170,7 +144,7 @@ def calculateTransitionProbabilities(trainFile):
         vState = bigram[1]
         keyVgivenU = (vState, uUnigram)
 
-        transitionProbability = (bigramTransitionCountDict[bigram] + 1) / (unigramTransitionCountDict[uUnigram] + 22)
+        transitionProbability = (bigramTransitionCountDict[bigram] + Lambda ) / (unigramTransitionCountDict[uUnigram] + (Lambda * 22))
         # print(transitionProbability)
         transitionProbabilityDict[keyVgivenU] = transitionProbability
 
@@ -184,9 +158,9 @@ def calculateTransitionProbabilities(trainFile):
     return transitionProbabilityDict, allTags
 
 
-def calculateEmissionProbabilities(trainFile):
+def calculateEmissionProbabilities(trainFile, Lambda):
 
-    emissionProbabilityDict = defaultdict(int)
+    emissionProbabilityDict = defaultdict(lambda : 0.000000001)
     emissionCountDict = defaultdict(int)
     separateTagCountDict = defaultdict(int)
 
@@ -227,7 +201,7 @@ def calculateEmissionProbabilities(trainFile):
         tagAndWord = key.split('|')
         tag = tagAndWord[0]
         word = tagAndWord[1]
-        emissionProbability = (emissionCountDict[tag + '|' + word] + 1) / (separateTagCountDict[tag] + 22)
+        emissionProbability = (emissionCountDict[tag + '|' + word] + Lambda ) / (separateTagCountDict[tag] + (Lambda * 22))
         # print(emissionProbability)
         emissionProbabilityDict[word + '|' + tag] = emissionProbability
 
