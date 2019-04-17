@@ -1,38 +1,43 @@
 # -*- coding: utf-8 -*-
+# Importing the libraries required
 import nltk, pprint, codecs
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.pipeline import Pipeline
 
-# TRAINING POS TAGGER IN ENGLISH USING THE ABOVE LIBRARIES
+# TRAINING DECISION TREE POS TAGGER IN HINDI USING THE ABOVE LIBRARIES
 
 # Initializing the classifier to be used
 classifier = Pipeline([
-    ('vectorizer', DictVectorizer(sparse=False)),
-    ('classifier', DecisionTreeClassifier(criterion='entropy'))
+    ('vectorizer', DictVectorizer(sparse = False)),
+    ('classifier', DecisionTreeClassifier(criterion = 'entropy'))
 ])
 
 def main():
 
+    # Opening training file
     trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
+
     # Getting the nltk corpus treebank consisting of tagged sentences
-    taggedSentences = getTaggedSentences(trainFile)[:-20000]
+    taggedSentences = getTaggedSentences(trainFile)[:-30000]
     # print(taggedSentences[0])
-    # return
 
     # Printing the number of tagged sentences and words in the same
     print("Number of tagged sentences in dataset : " + str(len(taggedSentences)))
-    # print("Number of tagged words in dataset     : " + str(len(nltk.corpus.treebank.tagged_words())))
+    numberOfWords = 0
+    for sentence in taggedSentences:
+        numberOfWords += len(sentence)
 
-    # # Printing an example illustrating the features used in the model
-    pprint.pprint(features(['मेरा', 'नाम', 'शाश्वत', 'कथूरिया', 'है', '2011'], 2))
-    x = features(['मेरा', 'नाम', 'शाश्वत', 'कथूरिया', 'है', '2011'], 2)
-    for key in x:
-        print(key)
-        print(x[key])
-    # return
+    print("Number of tagged words in dataset     : " + str(numberOfWords))
+
+    # Printing an example illustrating the features used in the model
+    exampleFeatures = features(['मेरा', 'नाम', 'शाश्वत', 'कथूरिया', 'है', '2011'], 2)
+    for key in exampleFeatures:
+        print key,
+        print exampleFeatures[key]
+
     # Training 75% of tagged sentences as it is an ideal partition
-    cutoff = int(.85 * len(taggedSentences))
+    cutoff = int(.75 * len(taggedSentences))
 
     # Splitting the same to learn from 75% and then test on 25% of data
     trainingSentences = taggedSentences[:cutoff]
@@ -64,8 +69,8 @@ def main():
 
     # Tagging the sentence using the trained model
     for (word, tag) in posTag(nltk.word_tokenize(sentence)):
-        print(word) ,
-        print(tag)
+        print word ,
+        print tag
 
 def features(sentence, index):
     """Function to return the features to be used in the model. Index is the index of the specific word in the sentence."""
@@ -112,9 +117,15 @@ def posTag(sentence):
 
 
 def getTaggedSentences(trainFile):
+    """Function to get the tagged sentences in the input file. Output is the list of sentences
+       with elements as word, tag tuples."""
 
+    # Initializing all tags list as a set
     allTags = set([])
+
+    # Initializing sentences list
     sentencesList = []
+
     # Iterating through the lines of the input file
     for line in trainFile.readlines():
 
@@ -132,19 +143,24 @@ def getTaggedSentences(trainFile):
             word = token.split('|')[0].strip()
             # Extracting the tag by splitting and stripping according to the file
             tag = token.split('|')[2].split('.')[0].strip(':?').strip()
+
             # Giving exact tags in training data a common parent tag for less complexity
             # and more accuracy
             if (tag == 'I-NP' or tag == 'B-NP' or tag == 'O'):
                 tag = 'NN'
 
+            # Appending (word, tag) tuple to the sentence
             sentence.append((word, tag))
 
             allTags = allTags | set([tag])
 
             # Appending the tag to the list of tags
             tags.append(tag)
+
+        # Appending the sentence to the list of sentences
         sentencesList.append(sentence)
 
     return sentencesList
+
 if __name__ == "__main__":
     main()
