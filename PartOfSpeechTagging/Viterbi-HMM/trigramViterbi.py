@@ -89,7 +89,7 @@ def trigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, trans
     return zip(sentence, tagsAssigned)
 
 
-def calculateTransitionProbabilities(trainFile):
+def calculateTransitionProbabilities(trainFile, Lambda):
 
     transitionProbabilityDict = defaultdict(int)
     trigramTransitionCountDict = defaultdict(int)
@@ -147,7 +147,7 @@ def calculateTransitionProbabilities(trainFile):
         sState = (trigram[-1],)
         keySgivenUV = sState + uvBigram
 
-        transitionProbability = (trigramTransitionCountDict[trigram] + 1) / (bigramTransitionCountDict[uvBigram] + 22)
+        transitionProbability = (trigramTransitionCountDict[trigram] + Lambda) / (bigramTransitionCountDict[uvBigram] + (Lambda * 22))
 
         transitionProbabilityDict[keySgivenUV] = transitionProbability
 
@@ -161,9 +161,9 @@ def calculateTransitionProbabilities(trainFile):
     return transitionProbabilityDict, allTags
 
 
-def calculateEmissionProbabilities(trainFile):
+def calculateEmissionProbabilities(trainFile, Lambda):
 
-    emissionProbabilityDict = defaultdict(lambda :  0.00000001)
+    emissionProbabilityDict = defaultdict(lambda :  0.000000001)
     emissionCountDict = defaultdict(int)
     separateTagCountDict = defaultdict(int)
 
@@ -204,7 +204,7 @@ def calculateEmissionProbabilities(trainFile):
         tagAndWord = key.split('|')
         tag = tagAndWord[0]
         word = tagAndWord[1]
-        emissionProbability = (emissionCountDict[tag + '|' + word] + 1) / (separateTagCountDict[tag] + 22)
+        emissionProbability = (emissionCountDict[tag + '|' + word] + Lambda) / (separateTagCountDict[tag] + (Lambda * 22))
         # print(emissionProbability)
         emissionProbabilityDict[word + '|' + tag] = emissionProbability
 
