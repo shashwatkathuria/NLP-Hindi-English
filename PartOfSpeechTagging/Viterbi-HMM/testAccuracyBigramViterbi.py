@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+# Importing the libraries and functions required
 from __future__ import division
 import codecs, time
 from collections import defaultdict
@@ -7,81 +8,101 @@ from bigramViterbi import bigramHMMViterbiAlgorithm, calculateTransitionProbabil
 
 
 def main():
-    Lambdas = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0]
+    # Lambdas = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+        Lambda = 0.0
+    # for Lambda in Lambdas:
 
-    for Lambda in Lambdas:
         # Opening the input training file
         trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
+
         # Getting the emission probabilities
         emissionProbabilityDict = calculateEmissionProbabilities(trainFile, Lambda)
+
         # Opening the input training file
         trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
+
         # Getting the transition probabilities and all the tags (states)
         transitionProbabilityDict, allTags = calculateTransitionProbabilities(trainFile, Lambda)
 
         # Opening the input test file
         testFile = codecs.open("testDataHindi.txt", mode = "r", encoding = "utf-8")
+
         # Calling the test function to get the accuracy of algorithm on the test data file
         accuracy = testBigramHMMViterbiAlgorithm(testFile, allTags, emissionProbabilityDict, transitionProbabilityDict, Lambda)
-        print(accuracy)
-        time.sleep(5)
+
+        # Printing the accuracy result
+        print("============================")
+        print("ACCURACY : " + str(accuracy) + " %")
+        print("============================")
+        time.sleep(1)
 
 def testBigramHMMViterbiAlgorithm(testFile, allTags, emissionProbabilityDict, transitionProbabilityDict, Lambda):
 
-    total = 0
-    correct = 0
+    # Initializing the variables required for calculating accuracy
+    totalTags = 0
+    correctTags = 0
+
+    # Reading the file line by line
     for line in testFile.readlines():
 
+        # Getting tokens from each such line
         tokens = line.split()
 
+        # Initializing a list for the words observed in the line
         sentence = []
 
+        # Initializing a list for the tags observed in the line
         tags = []
 
         for token in tokens:
 
+            # Extracting the word by splitting and stripping according to the file
             word = token.split('|')[0].strip()
-
+            # Extracting the tag by splitting and stripping according to the file
             tag = token.split('|')[2].split('.')[0].strip(':?').strip()
+
+            # Giving exact tags in training data a common parent tag for less complexity
+            # and more accuracy
             if (tag == 'I-NP' or tag == 'B-NP' or tag == 'O'):
                 tag = 'NN'
 
+            # Appending the word to the list of words
             sentence.append(word)
-
+            # Appending the tag to the list of tags
             tags.append(tag)
 
-        # tags = tags[:-1]
-        # sentence = sentence.strip().strip(".").strip()
-
+        # If the line read is not a blank line
         if sentence != []:
-            actual = zip(sentence, tags)
-            # print("\n\nACTUAL:\n\n")
-            # print(actual)
+
+            # Zipping to get a list of (word, tag) tuple elements format
+            actualWordsAndTags = zip(sentence, tags)
+
             try:
-                predicted = bigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict)
+                # Calling the function on the sentence
+                predictedWordsAndTags = bigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict)
+
+                # Iterating through to compare the predicted and actual tags
                 for i in range(len(sentence)):
-                    actualTag = actual[i][1]
-                    predictedTag = predicted[i][1]
-                    # print(actualTag, predictedTag)
-                    if actual[i][1] == predicted[i][1]:
-                        correct += 1
-                    print "CORRECT : " + str(correct) ,
-                    total += 1
-                    print " TOTAL   : " + str(total) ,
-                    print " LAMBDA  : " + str(Lambda)
+                    actualTag = actualWordsAndTags[i][1]
+                    predictedTag = predictedWordsAndTags[i][1]
+
+                    # Incrementing the number of correct tags by 1 if it is such
+                    if actualTag == predictedTag:
+                        correctTags += 1
+
+                    # Incrementing the number of total tags by 1
+                    totalTags += 1
+
+                    # Printing the results in between the interations
+                    print "CORRECT TAGS : " + str(correctTags) + "  ======== " ,
+                    print "TOTAL TAGS : " + str(totalTags)
+
+            # A couple of lines in the file are arbitrary
             except:
-                print("Couldn't Tag Sentence")
                 continue
-            # print("\n\nPREDICTED:\n\n")
-            # print(predicted)
 
-
-
-    return correct/total
-
-
-
-
+    # Returning the result
+    return (correctTags/totalTags) * 100
 
 if __name__ == "__main__":
     main()
