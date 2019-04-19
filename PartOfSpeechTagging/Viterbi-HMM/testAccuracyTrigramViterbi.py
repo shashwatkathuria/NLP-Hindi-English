@@ -10,12 +10,16 @@ def main():
     Lambdas = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
     for Lambda in Lambdas:
+
         # Opening the input training file
         trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
+
         # Getting the emission probabilities
         emissionProbabilityDict = calculateEmissionProbabilities(trainFile, Lambda)
+
         # Opening the input training file
         trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
+
         # Getting the transition probabilities and all the tags (states)
         transitionProbabilityDict, allTags = calculateTransitionProbabilities(trainFile, Lambda)
 
@@ -50,31 +54,27 @@ def testTrigramHMMViterbiAlgorithm(testFile, allTags, emissionProbabilityDict, t
 
             tags.append(tag)
 
-        # tags = tags[:-1]
-        # sentence = sentence.strip().strip(".").strip()
-
         if sentence != []:
             actual = zip(sentence, tags)
-            # print("\n\nACTUAL:\n\n")
-            # print(actual)
+
+
             try:
                 predicted = trigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict)
                 for i in range(len(sentence)):
                     actualTag = actual[i][1]
                     predictedTag = predicted[i][1]
-                    # print(actualTag, predictedTag)
+
                     if actual[i][1] == predicted[i][1]:
                         correct += 1
                     print "CORRECT : " + str(correct) ,
                     total += 1
                     print " TOTAL   : " + str(total)
+                    if total % 1000 == 0:
+                        print(correct/total)
+                        time.sleep(1)
             except:
                 print("Couldn't Tag Sentence")
                 continue
-            if total > 1000:
-                return correct/total
-            # print("\n\nPREDICTED:\n\n")
-            # print(predicted)
 
     return correct/total
 
