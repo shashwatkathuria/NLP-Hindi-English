@@ -1,0 +1,179 @@
+---------------------------------------------------------------------
+SOURCES REFERRED TO IN THIS WEEK
+---------------------------------------------------------------------
+
+1. https://en.wikipedia.org/wiki/Decision_tree_learning
+2. https://www.nltk.org/book/ch06.html
+3. https://scikit-learn.org/stable/modules/tree.html
+4. Research papers included in the directory.
+
+---------------------------------------------------------------------
+PROGRAMMING TASKS DONE
+---------------------------------------------------------------------
+
+1. Completed implementing Trigram Hidden Markov Model for POS
+   tagging of Hindi using Viterbi's Algorithm.
+2. Applied smoothing and offset techniques to our models for getting
+   more accuracy and giving appropriate chance to unknown words which
+   are not in our training data.
+3. Got an accuracy of 85% on the Trigram HMM Model.
+4. Started programming another model, which is the Bigram Hidden
+   Markov Model for POS tagging of hindi using Viterbi's Algorithm.
+5. Looking for ways to improve the accuracy of the Trigram HMM Model.
+6. Written programs for testing the accuracy of the models we
+   have made so far.
+7. Completed our search for finding a bigger corpus for training
+   our models and successfully found a big hindi tagged corpus.
+8. Also found a bigger corpus for testing the accuracy of our models.
+
+---------------------------------------------------------------------
+
+Last week, we discussed about the pseudocode and time complexity
+of the Viterbi's Algorithm. We also looked at the basics of the
+decision tree and how it works with respect to Part of Speech tagging
+
+This week, we will also give a pseudocode for the Bigram Hidden Markov
+Model using Viterbi's Algorithm in the end and will also discuss about
+the decision tree and then close the discussion of the topics.
+
+Next week, we will be ready with our results and will present them in the
+weekly report.
+
+---------------------------------------------------------------------
+DECISION TREE
+---------------------------------------------------------------------
+
+Decision trees have a number of useful qualities. To begin with,
+they're simple to understand, and easy to interpret. This is especially
+true near the top of the decision tree, where it is usually possible for
+the learning algorithm to find very useful features. Decision trees are
+especially well suited to cases where many hierarchical categorical
+distinctions can be made.
+
+However, decision trees also have a few disadvantages. One problem is
+that, since each branch in the decision tree splits the training data,
+the amount of training data available to train nodes lower in the tree
+can become quite small. As a result, these lower decision nodes may
+overfit the training set, learning patterns that reflect idiosyncrasies
+of the training set rather than linguistically significant patterns in
+the underlying problem. One solution to this problem is to stop dividing
+nodes once the amount of training data becomes too small. Another solution
+is to grow a full decision tree, but then to prune decision nodes that do
+not improve performance on a dev-test.
+
+A second problem with decision trees is that they force features to be
+checked in a specific order, even when features may act relatively
+independently of one another. For example, when classifying POS tags
+into types of tokens (such as digits, word, or symbols), features
+such as isDigit(token) are highly indicative of a specific label,
+regardless of what other the feature values are. Since there is limited
+space near the top of the decision tree, most of these features will
+need to be repeated on many different branches in the tree. And since the
+number of branches increases exponentially as we go down the tree, the
+amount of repetition can be very large.
+
+A related problem is that decision trees are not good at making use of
+features that are weak predictors of the correct label. Since these
+features make relatively small incremental improvements, they tend to
+occur very low in the decision tree. But by the time the decision tree
+learner has descended far enough to use these features, there is not
+enough training data left to reliably determine what effect they should
+have. If we could instead look at the effect of these features across
+the entire training set, then we might be able to make some conclusions
+about how they should affect the choice of label.
+
+The fact that decision trees require that features be checked in a
+specific order limits their ability to exploit features that are relatively
+independent of one another.
+
+---------------------------------------------------------------------
+TYPES OF DECISION TREE LEARNING
+---------------------------------------------------------------------
+
+Decision trees used in data mining are of two main types:
+
+1. Classification Tree
+
+   Classification tree analysis is when the predicted outcome is the
+   class (discrete) to which the data belongs.
+
+2. Regression Tree
+
+   Regression tree analysis is when the predicted outcome can be
+   considered a real number (e.g. the price of a house, or a patient's
+   length of stay in a hospital).
+
+---------------------------------------------------------------------
+OUR MODEL FOR DECISION TREE
+---------------------------------------------------------------------
+
+We implement the Classification Tree type of decision tree in our Part
+of Speech tagging problem because our output consists of dicrete ranges,
+i.e., tags.
+
+We implement the same using the sklearn library of Sci-Kit in Python,
+giving various features like isDigit, several suffixes and prefixes,
+previous and next words, etc.
+
+We will train it on the bigger corpus that we have found for Hindi again
+and compare it with our Decision Tree POS Tagger for English.
+
+---------------------------------------------------------------------
+PSEUDOCODE AND TIME COMPLEXITY ANALYSIS FOR BIGRAM HIDDEN MARKOV MODEL
+USING VITERBI'S ALGORITHM
+---------------------------------------------------------------------
+-----------------
+PSEUDOCODE
+-----------------
+
+Input : a sentence x1...xn, parameters q(s | v) and e(x | s).
+
+Initialization : Set g(0, *) = 1, and g(0, v) = 1 for all (u, v) such
+that v ≠ *.
+
+Algorithm :
+
+  For k = 1...n,
+
+      - For v in tag space,
+
+            g(k, v) = max( g(k-1, u) * q(v | u) * e(xk | v))
+                         (over all possible u in tag space)
+
+  Return max(g(n, v)) (over all possible v in tag space)
+
+
+The algorithm first fills in the g(k, v) values in using the recursive
+definition. It then uses the identity described before to calculate the
+highest probability for any sequence.
+
+-----------------
+TIME COMPLEXITY
+-----------------
+
+The running time for the algorithm is O( n * (|K| ^ 2) ) where K is the tag
+space, hence it is linear in the length of the sequence and square in the
+number of tags in the tag space.
+
+The formula is as follows
+
+g(k, v) = {g(k-1, u) * q(v | u) * e(xk | v)}
+          (for all u in K, i.e, for all possible labels in the corpus)
+
+where g(k, v) = Maximum cost of any sequence of length k ending with a
+                label v
+
+      g(k-1, u) = Maximum cost of any sequence of length k-1 ending with
+                  label u
+
+      q(v | u) = Transition probability of moving from label u to v
+
+      e(xk | v) = Emission probability of observing x(sub-k) at time-step k
+                  given the label was v
+
+---------------------------------------------------------------------
+
+Next week, we will be summarizing everything with the results we obtain
+and conclude our B.Tech Project Report.
+
+---------------------------------------------------------------------
