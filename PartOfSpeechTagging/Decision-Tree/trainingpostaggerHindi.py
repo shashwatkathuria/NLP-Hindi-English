@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+
 # Importing the libraries required
-import nltk, pprint, codecs
+import nltk, codecs
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.pipeline import Pipeline
@@ -20,7 +21,6 @@ def main():
 
     # Getting the nltk corpus treebank consisting of tagged sentences
     taggedSentences = getTaggedSentences(trainFile)[:-30000]
-    # print(taggedSentences[0])
 
     # Printing the number of tagged sentences and words in the same
     print("Number of tagged sentences in dataset : " + str(len(taggedSentences)))
@@ -30,11 +30,11 @@ def main():
 
     print("Number of tagged words in dataset     : " + str(numberOfWords))
 
-    # Printing an example illustrating the features used in the model
-    exampleFeatures = features(['मेरा', 'नाम', 'शाश्वत', 'कथूरिया', 'है', '2011'], 2)
-    for key in exampleFeatures:
-        print key,
-        print exampleFeatures[key]
+    # # Printing an example illustrating the features used in the model
+    # exampleFeatures = features(['मेरा', 'नाम', 'शाश्वत', 'कथूरिया', 'है', '2011'], 2)
+    # for key in exampleFeatures:
+    #     print key,
+    #     print exampleFeatures[key]
 
     # Training 75% of tagged sentences as it is an ideal partition
     cutoff = int(.75 * len(taggedSentences))
@@ -44,8 +44,8 @@ def main():
     testSentences = taggedSentences[cutoff:]
 
     # Printing the number of tagged sentences and test sentences
-    print("The number of training sentences are : " + str(len(trainingSentences)))
-    print("The number of test sentences are     : " + str(len(testSentences)))
+    print("The number of training sentences are  : " + str(len(trainingSentences)))
+    print("The number of test sentences are      : " + str(len(testSentences)))
 
     # Tranforming to dataset to use inbuilt classifier function to train the model
     X, y = transformToDataset(trainingSentences)
@@ -61,16 +61,38 @@ def main():
     XTest, yTest = transformToDataset(testSentences)
 
     # Computing and printing the accuracy of the model
-    print("\nThe accuracy of the trained model is : " + str(classifier.score(XTest, yTest)))
+    print("\n===================\n")
+    print("ACCURACY : " + str(classifier.score(XTest, yTest) * 100))
+    print("\n===================\n")
+    # Opening the input file
+    inputSentences = codecs.open("input.txt", mode = "r", encoding = "utf-8")
 
-    # Printing the sentence to be POS tagged
-    sentence = "तुलना के लिए सन् 2011 की जनगणना में भारत के बिहार राज्य में जन-घनत्व 1102 व्यक्ति प्रति वर्ग किमी था"
-    print("\nTagging the sentence : " + sentence + "\n")
+    # Initializing list for storing input sentences
+    sentencesList = []
 
-    # Tagging the sentence using the trained model
-    for (word, tag) in posTag(nltk.word_tokenize(sentence)):
-        print word ,
-        print tag
+    # Reading the input file and storing the sentences
+    for line in inputSentences:
+        sentence = []
+        tokens = line.split()
+        for token in tokens:
+            word = token.split('|')[0].strip()
+            sentence.append(token)
+
+        # Appending the sentence in the list of sentences
+        sentencesList.append(sentence)
+
+    print("\n===========================\nPRINTING THE RESULTS\n===========================\n")
+    # Iterating through each of the sentences
+    for sentence in sentencesList:
+
+        # Calling the algorithm on the sentence
+        predictedWordsAndTags = posTag(sentence)
+        print("\n=======\n")
+        # Printing the result of the algorithm
+        for (word, tag) in predictedWordsAndTags:
+            print word, tag,
+        print("\n")
+    print("\n=========================\n")
 
 def features(sentence, index):
     """Function to return the features to be used in the model. Index is the index of the specific word in the sentence."""
