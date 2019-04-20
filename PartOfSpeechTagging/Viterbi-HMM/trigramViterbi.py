@@ -55,7 +55,7 @@ def trigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, trans
 
     # Declaring the variables required
     initialLength = len(sentence)
-    backtrackingDP = defaultdict(list)
+    backtrackingDict = defaultdict(list)
     dpDict = {}
     tagsAssigned = []
 
@@ -93,15 +93,14 @@ def trigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, trans
 
                 # Getting the element to be backtracked and storing it in the backtracking Dict
                 backtrackW = maxWUVgivenK[1]
-                backtrackingDP[u, v] += [backtrackW]
+                backtrackingDict[u, v] += [backtrackW]
 
                 # Additionally storing (u, v) of (w, u, v) tags in the last iteration
                 if k == initialLength - 1:
-                    backtrackingDP[u, v] += [u, v]
+                    backtrackingDict[u, v] += [u, v]
 
     # List for getting the possibilities of final iterations
     maxPossibilitiesList = []
-
 
     for key in dpDict:
 
@@ -112,8 +111,8 @@ def trigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, trans
     # Finally getting the answer of the viterbi alogrithm, element[1] is the probability of the final iteration possibilities
     viterbiAnswer = max(maxPossibilitiesList, key = lambda element:element[1])
 
-    # Getting the tags associated with the viterbiAnswer by referring to the backtrackingDP
-    tagsAssigned = backtrackingDP[viterbiAnswer[0]][3:]
+    # Getting the tags associated with the viterbiAnswer by referring to the backtrackingDict
+    tagsAssigned = backtrackingDict[viterbiAnswer[0]][3:]
 
     # Removing the two '*'s appended in the starting of algorithm, not required anymore
     sentence = sentence[2:]
@@ -157,6 +156,7 @@ def calculateTransitionProbabilities(trainFile, Lambda):
             # Appending the tag to the list of tags
             tags.append(tag)
 
+        # Incrementing the total number of words by the required amount
         numberOfWords += len(tags)
 
         # If the line read is not a blank line
