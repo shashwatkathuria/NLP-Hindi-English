@@ -32,6 +32,7 @@ def main():
             word = token.split('|')[0].strip()
             sentence.append(token)
 
+        # Appending the sentence in the list of sentences
         sentencesList.append(sentence)
 
     print("\n===========================\nPRINTING THE RESULTS\n===========================\n")
@@ -75,7 +76,7 @@ def bigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transi
             # For all possibilities of (u, v) tags
             for u in allTags:
 
-                # Viterbi algorithm formulas
+                # Viterbi algorithm formula
                 possibility = dpDict[k - 1 , u] * transitionProbabilityDict[(v, u)] * (emissionProbabilityDict[sentence[k] + '|' + v])
 
                 # Appending the possibility to the list of possibilities
@@ -84,7 +85,7 @@ def bigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transi
             # Getting the maximum probability from the list of possibilities, element[0] is the probability of the possibility
             maxUVgivenK = max(possibilities, key = lambda element : element[0])
 
-            # Storing the answer in the list of probabilties
+            # Storing the answer in the DP dict
             dpDict[k, v] = maxUVgivenK[0]
 
             # Getting the element to be backtracked and storing it in the backtracking Dict
@@ -127,6 +128,7 @@ def calculateTransitionProbabilities(trainFile, Lambda):
     numberOfWords = 0
     numberOfSentences = 0
     allTags = set([])
+
     # Iterating through the lines of the input file
     for line in trainFile.readlines():
 
@@ -161,10 +163,10 @@ def calculateTransitionProbabilities(trainFile, Lambda):
             # Incrementing the total number of sentences by the required amount
             numberOfSentences += 1
 
-            # Getting the bigrams in the exact order by zipping through the tags
+            # Getting the unigrams in the exact order
             unigramSentenceList = tags[:]
 
-            # Getting the trigrams in the exact order by zipping through the tags
+            # Getting the bigrams in the exact order by zipping through the tags
             bigramSentenceList = zip(tags, tags[1:])
 
             # Incrementing the count of the unigrams as observed in the unigramSentenceList
@@ -242,7 +244,7 @@ def calculateEmissionProbabilities(trainFile, Lambda):
     # Iterating through the tag and word in the keys of emissionCountDict
     for key in emissionCountDict:
 
-        # Getting the tag and word fromm the key
+        # Getting the tag and word from the key
         tagAndWord = key.split('|')
         tag = tagAndWord[0]
         word = tagAndWord[1]
