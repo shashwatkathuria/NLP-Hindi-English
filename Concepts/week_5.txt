@@ -45,7 +45,8 @@ In this week, we will discuss about the time complexity of the pseudocode
 and time complexity for the Viterbi's Algorithm.
 
 -----------------------------------------------------------------
-PSEUDOCODE AND TIME COMPLEXITY ANALYSIS FOR VITERBI'S ALGORITHM
+PSEUDOCODE AND TIME COMPLEXITY ANALYSIS FOR TRIGRAM HIDDEN MARKOV MODEL
+USING VITERBI'S ALGORITHM
 -----------------------------------------------------------------
 -----------------
 PSEUDOCODE
@@ -53,7 +54,7 @@ PSEUDOCODE
 
 Input : a sentence x1...xn, parameters q(s | u, v) and e(x | s).
 
-Initialization : Set g(0, *, *) = 1, and g(0, u, v) = 0 for all (u, v) such
+Initialization : Set g(0, *, *) = 1, and g(0, u, v) = 1 for all (u, v) such
 that u ≠ * or v ≠ *.
 
 Algorithm :
