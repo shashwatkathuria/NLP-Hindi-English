@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+
 # Importing the libraries required
-import nltk, pprint
+import nltk
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.pipeline import Pipeline
@@ -23,7 +24,10 @@ def main():
     print("Number of tagged words in dataset     : " + str(len(nltk.corpus.treebank.tagged_words())))
 
     # # Printing an example illustrating the features used in the model
-    # pprint.pprint(features(['This', 'is', 'a', 'sentence'], 2))
+    # exampleFeatures = features(['This', 'is', 'a', 'sentence'], 2)
+    # for key in exampleFeatures:
+    #     print key,
+    #     print exampleFeatures[key]
 
     # Training 75% of tagged sentences as it is an ideal partition
     cutoff = int(.75 * len(taggedSentences))
