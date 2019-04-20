@@ -8,9 +8,6 @@ def main():
     tokenizer = Tokenizer('''वाशिंगटन: दुनिया के सबसे शक्तिशाली देश के राष्ट्रपति बराक ओबामा ने प्रधानमंत्री नरेंद्र मोदी के संदर्भ में 'टाइम' पत्रिका में लिखा, "नरेंद्र मोदी ने अपने बाल्यकाल में अपने परिवार की सहायता करने के लिए अपने पिता की चाय बेचने में मदद की थी। आज वह दुनिया के सबसे बड़े लोकतंत्र के नेता हैं और गरीबी से प्रधानमंत्री तक की उनकी जिंदगी की कहानी भारत के उदय की गतिशीलता और क्षमता को परिलक्षित करती है।''')
     tokenizer.generateSentences()
     tokenizer.tokenize()
-    frequencyDict = tokenizer.generateFrequencyDict()
-    s = tokenizer.concordance('बातों')
-    frequencyDict = tokenizer.generateStemDict()
     z = tokenizer.removeStopWords()
     tokenizer.printTokens(tokenizer.finalTokens)
     print("The number of sentences are : " + str(tokenizer.sentenceCount()) )
@@ -31,13 +28,14 @@ class Tokenizer():
         self.finalList = []
 
     def readFromFile(self, filename):
-        f = codecs.open(filename, encoding = 'utf-8')
-        self.text = f.read()
+        file = codecs.open(filename, encoding = 'utf-8')
+        self.text = file.read()
         self.cleanText()
 
     def generateSentences(self):
         text = self.text
-        self.sentences = text.split(u"।")
+        self.sentences = text.split(u"।")[:-1]
+        print(self.sentences)
 
     def printSentences(self, sentences = None):
         if sentences:
@@ -105,33 +103,6 @@ class Tokenizer():
     def textLength(self):
         return len(self.text)
 
-    def concordance(self,word):
-        if not self.sentences:
-            self.generateSentences()
-
-        sentence = self.sentences
-        concordanceSent = []
-        for each in sentence:
-            each = each.encode('utf-8')
-            if word in each:
-                concordanceSent.append(each.decode('utf-8'))
-        return concordanceSent
-
-    def generateFrequencyDict(self):
-        freq = {}
-        if not self.tokens:
-            self.tokenize()
-
-        tempTokens = self.tokens
-        for each in self.tokens:
-            freq[each] = tempTokens.count(each)
-
-        return freq
-
-    def printFrequencyDict(self, freq):
-        for i in freq.keys():
-            print(i.encode('utf-8'), ',', freq[i])
-
     def generateStemWords(self, word):
         suffixes = {
         1: [u"ो",u"े",u"ू",u"ु",u"ी",u"ि",u"ा"],
@@ -161,10 +132,10 @@ class Tokenizer():
         return stemWord
 
     def removeStopWords(self):
-        f = codecs.open("HindiStopWords.txt", encoding = 'utf-8')
+        file = codecs.open("HindiStopWords.txt", encoding = 'utf-8')
         if not self.stemmedWords:
             self.generateStemDict()
-        stopwords = [x.strip() for x in f.readlines()]
+        stopwords = [x.strip() for x in file.readlines()]
         tokens = [i for i in self.stemmedWords if unicode(i) not in stopwords]
         self.finalTokens = tokens
         return tokens
