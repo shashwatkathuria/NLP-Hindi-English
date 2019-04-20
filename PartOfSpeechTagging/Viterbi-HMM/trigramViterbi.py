@@ -9,21 +9,17 @@ def main():
     # Opening the input training file
     trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
     # Getting the emission probabilities
-    emissionProbabilityDict = calculateEmissionProbabilities(trainFile)
+    emissionProbabilityDict = calculateEmissionProbabilities(trainFile, 0.0)
     # Opening the input training file
     trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
     # Getting the transition probabilities and all the tags (states)
-    transitionProbabilityDict, allTags = calculateTransitionProbabilities(trainFile)
+    transitionProbabilityDict, allTags = calculateTransitionProbabilities(trainFile, 0.0)
 
     # Getting the input sentences file
     inputSentences = codecs.open("input.txt", mode = "r", encoding = "utf-8")
 
     # Initializing list for storing input sentences
     sentencesList = []
-    for key in transitionProbabilityDict:
-        print(key, transitionProbabilityDict[key])
-
-    assert False
     # Getting the input sentences
     for line in inputSentences:
         sentence = []
@@ -33,10 +29,12 @@ def main():
             sentence.append(token)
 
         sentencesList.append(sentence)
-    print(sentencesList)
+
     for sentence in sentencesList:
         x = trigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict)
-        print(x)
+        for (word, tag) in x:
+            print word, tag,
+        print(" ")
 
 
 def trigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, transitionProbabilityDict):
