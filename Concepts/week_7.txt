@@ -1,0 +1,55 @@
+------------------------------------------------------------
+PROGRAMMING TASKS DONE
+------------------------------------------------------------
+
+1. Completed implementing Bigram Hidden Markov Model
+   POS Tagger using Viterbi's Algorithm.
+2. Got an accuracy of 93% on the Bigram HMM Model.
+3. Implemented a improved version of Trigram Hidden
+   Markov Model using Viterbi's Algorithm by splitting
+   the trigram into two and calculating probabilties by
+   giving them certain weights.
+4. Got an accuracy of 88.4% on the improved Trigram HMM
+   Model.
+5. Completed the programming of all the testing accuracy
+   programs required throughout.
+6. Got an accuracy of 89.5% on the English Decision Tree
+   Model POS Tagger.
+7. Got an accuracy of 87% on the Hindi Decision Tree Model
+   POS Tagger.
+
+------------------------------------------------------------
+RESULTS
+------------------------------------------------------------
+
+PART OF SPEECH TAGGERS
+
+---------------------------------------------------
+Hindi Bigram Hidden Markov Model = 93%
+---------------------------------------------------
+
+---------------------------------------------------
+Hindi Trigram Hidden Markov Model = 85%
+---------------------------------------------------
+
+---------------------------------------------------
+Hindi Improved Trigram Hidden Markov Model = 88.4%
+---------------------------------------------------
+
+---------------------------------------------------
+Hindi Decision Tree Classification Model = 87%
+---------------------------------------------------
+
+---------------------------------------------------
+English Decision Tree Classification Model = 89.5%
+---------------------------------------------------
+
+------------------------------------------------------------
+
+We have completed our task of implementing a Hindi
+based POS Tagger and even extended it to make more
+improved versions of it, also comparing it with the
+decision tree model made for both Hindi and English.
+Hence, we conclude our B.Tech Project.
+
+------------------------------------------------------------
