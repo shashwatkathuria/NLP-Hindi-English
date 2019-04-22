@@ -10,7 +10,7 @@ def main():
     trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
 
     # Getting the emission probabilities
-    emissionProbabilityDict = calculateEmissionProbabilities(trainFile, 0.0)
+    emissionProbabilityDict = calculateEmissionProbabilities(trainFile, 0.0, 0.000000001)
 
     # Opening the input training file
     trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
@@ -191,7 +191,7 @@ def calculateTransitionProbabilities(trainFile, Lambda):
         keySgivenUV = sState + uvBigram
 
         # Calculating the transition probability
-        transitionProbability = (trigramTransitionCountDict[trigram] + Lambda) / (bigramTransitionCountDict[uvBigram] + (Lambda * 22))
+        transitionProbability = (trigramTransitionCountDict[trigram] + Lambda) / (bigramTransitionCountDict[uvBigram] + (Lambda * (22 ** 2)))
 
         # Storing the transition probability in the dict
         transitionProbabilityDict[keySgivenUV] = transitionProbability
@@ -204,11 +204,11 @@ def calculateTransitionProbabilities(trainFile, Lambda):
     return transitionProbabilityDict, allTags
 
 
-def calculateEmissionProbabilities(trainFile, Lambda):
+def calculateEmissionProbabilities(trainFile, Lambda, offset):
 
     # Declaring the variables and default dicts required
     # 0.000000001 as offset for smoothing
-    emissionProbabilityDict = defaultdict(lambda :  0.000000001)
+    emissionProbabilityDict = defaultdict(lambda :  offset)
     emissionCountDict = defaultdict(int)
     separateTagCountDict = defaultdict(int)
 
@@ -252,7 +252,7 @@ def calculateEmissionProbabilities(trainFile, Lambda):
         word = tagAndWord[1]
 
         # Calculating the emission probability
-        emissionProbability = (emissionCountDict[tag + '|' + word] + Lambda) / (separateTagCountDict[tag] + (Lambda * 22))
+        emissionProbability = (emissionCountDict[tag + '|' + word] + Lambda) / (separateTagCountDict[tag] + (Lambda * (22 ** 2)))
 
         # Storing the emission probability in the dict
         emissionProbabilityDict[word + '|' + tag] = emissionProbability
