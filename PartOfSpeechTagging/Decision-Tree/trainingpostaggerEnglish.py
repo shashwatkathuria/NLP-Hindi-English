@@ -54,10 +54,12 @@ def main():
     XTest, yTest = transformToDataset(testSentences)
 
     # Computing and printing the accuracy of the model
-    print("\nThe accuracy of the trained model is : " + str(classifier.score(XTest, yTest)))
+    print("\n===================\n")
+    print("ACCURACY : " + str(classifier.score(XTest, yTest) * 100))
+    print("\n===================\n")
 
     # Printing the sentence to be POS tagged
-    sentence = "My name is Shashwat Kathuria."
+    sentence = "My name is Shashwat Kathuria. His name is Shreyas Mahajan."
     print("\nTagging the sentence : " + sentence + "\n")
 
     # Tagging the sentence using the trained model
