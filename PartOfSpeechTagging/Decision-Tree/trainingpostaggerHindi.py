@@ -20,7 +20,7 @@ def main():
     trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
 
     # Getting the nltk corpus treebank consisting of tagged sentences
-    taggedSentences = getTaggedSentences(trainFile)[:-30000]
+    taggedSentences = getTaggedSentences(trainFile)[:-10000]
 
     # Printing the number of tagged sentences and words in the same
     print("Number of tagged sentences in dataset : " + str(len(taggedSentences)))
@@ -102,12 +102,12 @@ def features(sentence, index):
         'word': sentence[index],
         'isFirst': index == 0,
         'isLast': index == len(sentence) - 1,
-        'prefix1': sentence[index][0],
-        'prefix2': sentence[index][:2],
-        'prefix3': sentence[index][:3],
-        'suffix1': sentence[index][-1],
-        'suffix2': sentence[index][-2:],
-        'suffix3': sentence[index][-3:],
+        # 'prefix1': sentence[index][0],
+        # 'prefix2': sentence[index][:2],
+        # 'prefix3': sentence[index][:3],
+        # 'suffix1': sentence[index][-1],
+        # 'suffix2': sentence[index][-2:],
+        # 'suffix3': sentence[index][-3:],
         'previousWord': '' if index == 0 else sentence[index - 1],
         'nextWord': '' if index == len(sentence) - 1 else sentence[index + 1],
         'hasHyphen': '-' in sentence[index],
@@ -179,8 +179,9 @@ def getTaggedSentences(trainFile):
             # Appending the tag to the list of tags
             tags.append(tag)
 
-        # Appending the sentence to the list of sentences
-        sentencesList.append(sentence)
+        if len(sentence) > 0:
+            # Appending the sentence to the list of sentences
+            sentencesList.append(sentence)
 
     return sentencesList
 
