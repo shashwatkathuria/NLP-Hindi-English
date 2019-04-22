@@ -7,33 +7,43 @@ from trigramViterbi import trigramHMMViterbiAlgorithm, calculateTransitionProbab
 
 
 def main():
+
+    # CODE USED FOR CHECKING THE BEST VALUE OF LAMBDA AND OFFSET IS COMMENTED
+    # AND THE BEST VALUES ARE USED
+
     # Lambdas = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-        Lambda = 0.0
-    # for Lambda in Lambdas:
+        # Lambda = 0.0
+    # offset = 0.000001
+    Offsets = [1e-14]
+    # for i in range(6):
+    #     Offsets.append(offset)
+    #     offset /= 100
+    Lambdas = [0.0]
+    for Lambda in Lambdas:
+        for offset in Offsets:
+            # Opening the input training file
+            trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
 
-        # Opening the input training file
-        trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
+            # Getting the emission probabilities
+            emissionProbabilityDict = calculateEmissionProbabilities(trainFile, Lambda, offset)
 
-        # Getting the emission probabilities
-        emissionProbabilityDict = calculateEmissionProbabilities(trainFile, Lambda)
+            # Opening the input training file
+            trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
 
-        # Opening the input training file
-        trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
+            # Getting the transition probabilities and all the tags (states)
+            transitionProbabilityDict, allTags = calculateTransitionProbabilities(trainFile, Lambda)
 
-        # Getting the transition probabilities and all the tags (states)
-        transitionProbabilityDict, allTags = calculateTransitionProbabilities(trainFile, Lambda)
+            # Opening the input test file
+            testFile = codecs.open("testDataHindi.txt", mode = "r", encoding = "utf-8")
 
-        # Opening the input test file
-        testFile = codecs.open("testDataHindi.txt", mode = "r", encoding = "utf-8")
+            # Calling the test function to get the accuracy of algorithm on the test data file
+            accuracy = testTrigramHMMViterbiAlgorithm(testFile, allTags, emissionProbabilityDict, transitionProbabilityDict)
 
-        # Calling the test function to get the accuracy of algorithm on the test data file
-        accuracy = testTrigramHMMViterbiAlgorithm(testFile, allTags, emissionProbabilityDict, transitionProbabilityDict)
-
-        # Printing the accuracy result
-        print("============================")
-        print("ACCURACY : " + str(accuracy) + " %")
-        print("============================")
-        time.sleep(1)
+            # Printing the accuracy result
+            print("============================")
+            print("ACCURACY : " + str(accuracy) + " %" + " " + "Offset : " + str(offset) + " " + "Lambda : " + str(Lambda))
+            print("============================")
+            time.sleep(1)
 
 def testTrigramHMMViterbiAlgorithm(testFile, allTags, emissionProbabilityDict, transitionProbabilityDict):
 
