@@ -10,13 +10,13 @@ def main():
     trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
 
     # Getting the emission probabilities
-    emissionProbabilityDict = calculateEmissionProbabilities(trainFile, 0.0)
+    emissionProbabilityDict = calculateEmissionProbabilities(trainFile, 0.0, 0.00000000001)
 
     # Opening the input training file
     trainFile = codecs.open("trainDataHindi.txt", mode = "r", encoding = "utf-8")
 
     # Getting the transition probabilities and all the tags (states)
-    transitionProbabilityDict, allTags = calculateTransitionProbabilities(trainFile, 0.0)
+    transitionProbabilityDict, allTags = calculateTransitionProbabilities(trainFile, 0.0, 9)
 
     # Opening the input file
     inputSentences = codecs.open("input.txt", mode = "r", encoding = "utf-8")
@@ -122,7 +122,7 @@ def trigramHMMViterbiAlgorithm(sentence, allTags, emissionProbabilityDict, trans
     return zip(sentence, tagsAssigned)
 
 
-def calculateTransitionProbabilities(trainFile, Lambda):
+def calculateTransitionProbabilities(trainFile, Lambda, Weight):
 
     # Declaring the variables and default dicts required
     transitionProbabilityDict = defaultdict(int)
@@ -216,7 +216,7 @@ def calculateTransitionProbabilities(trainFile, Lambda):
         # Giving weights to repective bigram probabilities
         # and using their combined effect as a trigram
         # Calculating the transition probability
-        transitionProbability = (1 * transitionProbability2) + (9 * transitionProbability1)
+        transitionProbability = (1 * transitionProbability2) + (Weight * transitionProbability1)
 
         # Storing the transition probability in the dict
         transitionProbabilityDict[keySgivenUV] = transitionProbability
@@ -229,11 +229,11 @@ def calculateTransitionProbabilities(trainFile, Lambda):
     return transitionProbabilityDict, allTags
 
 
-def calculateEmissionProbabilities(trainFile, Lambda):
+def calculateEmissionProbabilities(trainFile, Lambda, offset):
 
     # Declaring the variables and default dicts required
     # 0.00000000001 as offset for smoothing
-    emissionProbabilityDict = defaultdict(lambda :  0.00000000001)
+    emissionProbabilityDict = defaultdict(lambda :  offset)
     emissionCountDict = defaultdict(int)
     separateTagCountDict = defaultdict(int)
 
@@ -277,7 +277,7 @@ def calculateEmissionProbabilities(trainFile, Lambda):
         word = tagAndWord[1]
 
         # Calculating the emission probability
-        emissionProbability = (emissionCountDict[tag + '|' + word] + Lambda) / (separateTagCountDict[tag] + (Lambda * 22))
+        emissionProbability = (emissionCountDict[tag + '|' + word] + Lambda) / (separateTagCountDict[tag] + (Lambda * (22 ** 2)))
 
         # Storing the emission probability in the dict
         emissionProbabilityDict[word + '|' + tag] = emissionProbability
