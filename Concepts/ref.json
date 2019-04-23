@@ -1,37 +1,13 @@
-[
-		{
-				"type" : "inproceedings",
-				"id" : "joshi2013hmm",
-				"citekey" : "joshi2013hmm",
-				"collection" : "ref",
-				"title" : "HMM based POS tagger for Hindi",
-				"author":[
-					{
-							"name" : "Joshi, Nisheeth"
-					},
-					{
-							"name" : "Darbari, Hemant"
-					},
-					{
-							"name" : "Mathur, Iti"
-					}
-				],
-				"booktitle" : "Proceeding of 2013 International Conference on Artificial Intelligence, Soft Computing (AISC-2013)",
-				"year" : "2013"
-		},
-		{
-				"type" : "article",
-				"id" : "pammipos",
-				"citekey" : "pammipos",
-				"collection" : "ref",
-				"title" : "POS Tagging and Chunking using Decision Forests",
-				"author" : [
-					{
-							"name" : "Pammi, Sathish Chandra"
-					},
-					{
-							"name" : "Prahallad, Kishore"
-					}
-				]
-		}
-]
+{
+		"HindiPOSTagging":["Proceeding of 2013 International Conference on Artificial Intelligence, Soft Computing (AISC-2013)",
+				2013,
+				 "HMM based POS tagger for Hindi",
+				 "Joshi, Nisheeth and Darbari, Hemant and Mathur, Iti",
+				 "inproceedings"
+			 ],
+		"POSTaggingDecisionTreesHindi":[
+				"POS Tagging and Chunking using Decision Forests",
+				"Pammi, Sathish Chandra and Prahallad, Kishore",
+				"article"
+		]
+}
